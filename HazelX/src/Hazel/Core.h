@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-// ¶¨ÒåÒ»¸öºê¾ö¶¨ÔÚ¹¹½¨µÄÊ±ºòÊÇdllimport»¹ÊÇdllexport
+// å®šä¹‰ä¸€ä¸ªå®å†³å®šåœ¨æ„å»ºçš„æ—¶å€™æ˜¯dllimportè¿˜æ˜¯dllexport
 #ifdef HZ_PLATFORM_WINDOWS
 	#ifdef HZ_BUILD_DLL
 		#define HAZEL_API __declspec(dllexport)

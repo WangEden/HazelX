@@ -4,4 +4,7 @@ bin/
 bin-int/
 HazelX/vendor/
 
+# vendor
+vendor/bin/premake/premake5.exe
+
 *.user
