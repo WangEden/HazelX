@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Sandbox", 
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "HazelX.sln",
+                "/t:Sandbox",
+                "/p:Configuration=Debug",
+                "/p:Platform=x64"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$msCompile"]
+        }
+    ]
+}
