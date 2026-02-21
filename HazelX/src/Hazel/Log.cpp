@@ -1,4 +1,5 @@
-﻿#include "Log.h"
+﻿#include "hzpch.h"
+#include "Log.h"
 #include "spdlog/sinks/stdout_color_sinks.h" // 有这个才能设置级别
 
 namespace Hazel {

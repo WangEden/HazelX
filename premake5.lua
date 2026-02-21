@@ -25,6 +25,9 @@ project "HazelX"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+    pchheader "hzpch.h"
+    pchsource "HazelX/src/hzpch.cpp"
+
     files
     {
         "%{prj.name}/src/**.h",
@@ -33,7 +36,8 @@ project "HazelX"
 
     includedirs
     {
-        "%{prj.name}/vendor/spdlog/include"
+        "%{prj.name}/vendor/spdlog/include",
+        "%{prj.name}/src"
     }
 
     filter "system:windows"
