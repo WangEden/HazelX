@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Events/Event.h"
 
 namespace Hazel {
 
@@ -16,5 +17,3 @@ namespace Hazel {
 	// To be defined in CLIEN 请在客户端定义这些
 	Application * CreateApplication();
 }
-
-
