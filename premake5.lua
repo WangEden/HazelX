@@ -71,14 +71,17 @@ project "HazelX"
     
     filter "configurations:Debug"
         defines "HZ_DEBUG"
+        buildoptions "/MDd"
         symbols "On" -- 开启调试符号
 
     filter "configurations:Release"
         defines "HZ_RELEASE"
+        buildoptions "/MD"
         optimize "On" -- 开启优化
 
     filter "configurations:Dist"
         defines "HZ_DIST"
+        buildoptions "/MD"
         optimize "On" -- 开启优化
 
 project "Sandbox"
@@ -118,14 +121,17 @@ project "Sandbox"
 
     filter "configurations:Debug"
         defines "HZ_DEBUG"
+        buildoptions "/MDd"
         symbols "On" -- 开启调试符号
 
     filter "configurations:Release"
         defines "HZ_RELEASE"    
+        buildoptions "/MD"
         optimize "On" -- 开启优化
 
     filter "configurations:Dist"
         defines "HZ_DIST"
+        buildoptions "/MD"
         optimize "On" -- 开启优化
 
     

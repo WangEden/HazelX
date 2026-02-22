@@ -35,8 +35,10 @@ namespace Hazel {
 
 	class HAZEL_API Event
 	{
-		friend class EventDispatcher;
+		//friend class EventDispatcher;
 	public:
+		bool Handled = false;
+
 		virtual EventType GetEventType() const = 0; // const = 0 表示纯虚函数，即必须被实现
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
@@ -47,8 +49,8 @@ namespace Hazel {
 			return GetCategoryFlags() & category;
 		}
 
-	protected:
-		bool m_Handled = false; // 规定事件是否想被继续传播，这样下面的层就不会再重复处理事件
+	//protected:
+		//bool m_Handled = false; // 规定事件是否想被继续传播，这样下面的层就不会再重复处理事件
 		// 事件会在层之间传播
 	};
 
@@ -67,7 +69,7 @@ namespace Hazel {
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.m_Handled = func(*(T*)&m_Event); 
+				m_Event.Handled = func(*(T*)&m_Event); 
 				// *(T*)&m_Event 将基类指针转换成派生类指针再解引用为T&，并作为参数调用
 				return true;
 			}
