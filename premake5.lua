@@ -17,6 +17,11 @@ workspace "HazelX"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludeDir = {}
+IncludeDir["GLFW"] = "HazelX/vendor/GLFW/include"
+
+include "HazelX/vendor/GLFW"
+
 project "HazelX"
     location "HazelX"
     kind "SharedLib" -- 动态链接库
@@ -37,7 +42,14 @@ project "HazelX"
     includedirs
     {
         "%{prj.name}/vendor/spdlog/include",
-        "%{prj.name}/src"
+        "%{prj.name}/src",
+        "%{IncludeDir.GLFW}"
+    }
+
+    links
+    {
+        "GLFW",
+        "opengl32.lib"
     }
 
     filter "system:windows"
