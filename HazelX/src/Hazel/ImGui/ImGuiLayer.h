@@ -6,6 +6,8 @@
 #include "Hazel/Events/KeyEvent.h"
 #include "Hazel/Events/MouseEvent.h"
 
+struct ImGuiIO;
+
 namespace Hazel {
 
 	class HAZEL_API ImGuiLayer : public Layer
@@ -27,6 +29,7 @@ namespace Hazel {
 		bool OnKeyReleasedEvent(KeyReleasedEvent& e);
 		bool OnKeyTypedEvent(KeyTypedEvent& e);
 		bool OnWindowResizeEvent(WindowResizeEvent& e);
+		void UpdateKeyModifiers(struct ImGuiIO& io);
 
 	private:
 		float m_Time = 0.0f;

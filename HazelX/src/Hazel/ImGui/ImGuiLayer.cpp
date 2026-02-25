@@ -112,6 +112,7 @@ namespace Hazel {
 	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
+        UpdateKeyModifiers(io);
 		io.AddKeyEvent(ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode(), 0), true);
 		return false;
 	}
@@ -119,6 +120,7 @@ namespace Hazel {
 	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
         ImGuiIO& io = ImGui::GetIO();
+        UpdateKeyModifiers(io);
         io.AddKeyEvent(ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode(), 0), false);
 		return false;
 	}
@@ -142,6 +144,15 @@ namespace Hazel {
 
 		return false;
 	}
+
+    void ImGuiLayer::UpdateKeyModifiers(struct ImGuiIO& io)
+    {
+        GLFWwindow* window = glfwGetCurrentContext();
+        io.AddKeyEvent(ImGuiMod_Ctrl,  (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS));
+        io.AddKeyEvent(ImGuiMod_Shift, (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)   == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT)   == GLFW_PRESS));
+        io.AddKeyEvent(ImGuiMod_Alt,   (glfwGetKey(window, GLFW_KEY_LEFT_ALT)     == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_ALT)     == GLFW_PRESS));
+        io.AddKeyEvent(ImGuiMod_Super, (glfwGetKey(window, GLFW_KEY_LEFT_SUPER)   == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_RIGHT_SUPER)   == GLFW_PRESS));
+    }
 
     ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int keycode, int scancode)
     {
