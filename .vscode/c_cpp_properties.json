@@ -5,7 +5,15 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/HazelX/src",
-                "${workspaceFolder}/HazelX/vendor/spdlog/include"
+                "${workspaceFolder}/HazelX/src/Hazel",
+                "${workspaceFolder}/HazelX/src/Hazel/Events",
+                "${workspaceFolder}/HazelX/src/Hazel/ImGui",
+                "${workspaceFolder}/HazelX/src/Platform/OpenGL",
+                "${workspaceFolder}/HazelX/src/Platform/Windows",
+                "${workspaceFolder}/HazelX/vendor/spdlog/include",
+                "${workspaceFolder}/HazelX/vendor/GLFW/include",
+                "${workspaceFolder}/HazelX/vendor/Glad/include",
+                "${workspaceFolder}/HazelX/vendor/imgui"
             ],
             "defines": [
                 "_DEBUG",
