@@ -2,16 +2,12 @@
 .vs/
 bin/
 bin-int/
-HazelX/vendor/
+HazelX/vendor/*/*/
+!HazelX/vendor/*/include/
+!HazelX/vendor/*/src/
 
 # vendor
-vendor/bin/premake/premake5.exe
-
-# HazelX-GLFW 3.4
-HazelX/Vendor/GLFW/*
-!HazelX/Vendor/GLFW/premake5.lua
-HazelX/Vendor/GLFW/bin/
-HazelX/Vendor/GLFW/bin-int/
+# vendor/bin/premake/premake5.exe
 
 # Visual Studio
 *.user
