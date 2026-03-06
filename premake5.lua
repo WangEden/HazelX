@@ -21,8 +21,9 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "HazelX/vendor/GLFW/include"
 IncludeDir["Glad"] = "HazelX/vendor/Glad/include"
 IncludeDir["ImGui"] = "HazelX/vendor/imgui"
+IncludeDir["GLM"] = "HazelX/vendor/glm"
 
-include "HazelX/vendor/GLFW"
+include "HazelX/vendor/GLFW" -- 链接到GLFW子模块中的premake5.lua
 include "HazelX/vendor/Glad"
 include "HazelX/vendor/imgui"
 
@@ -41,7 +42,9 @@ project "HazelX"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/glm/glm/**.hpp",
+        "%{prj.name}/vendor/glm/glm/**.inl",
     }
 
     includedirs
@@ -50,7 +53,8 @@ project "HazelX"
         "%{prj.name}/src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
-        "%{IncludeDir.ImGui}"
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.GLM}",
     }
 
     links
@@ -114,7 +118,8 @@ project "Sandbox"
     includedirs
     {
         "HazelX/vendor/spdlog/include",
-        "HazelX/src"
+        "HazelX/src",
+        "%{IncludeDir.GLM}",
     }
 
     links
