@@ -3,6 +3,7 @@
 bin/
 bin-int/
 HazelX/vendor/*/*/
+!HazelX/vendor/glm/glm/
 !HazelX/vendor/*/include/
 !HazelX/vendor/*/src/
 
