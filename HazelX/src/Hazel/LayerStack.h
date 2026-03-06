@@ -23,7 +23,8 @@ namespace Hazel {
 
 	private:
 		std::vector<Layer*> m_Layers;
-		std::vector<Layer*>::iterator m_LayerInsert; // 一个迭代器
+		unsigned int m_LayerInsertIndex = 0;
+		// std::vector<Layer*>::iterator m_LayerInsert; // 一个迭代器
 		// ::iterator begin()/end() 让这个类型支持迭代操作，即：
 		/*
 			for (Layer* layer : m_LayerStack) 

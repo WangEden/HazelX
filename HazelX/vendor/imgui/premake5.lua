@@ -25,6 +25,11 @@ project "ImGui"
         -- "imgui_impl_opengl3.h",
     }
 
+    defines
+    {
+        "IMGUI_API=__declspec(dllexport)"
+    }
+
     -- IncludeDir = {}
     -- IncludeDir["GLFW"] = "HazelX/vendor/GLFW/include"
     -- include "HazelX/vendor/GLFW"
