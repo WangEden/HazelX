@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Event.h"
 
@@ -10,7 +10,7 @@ namespace Hazel {
 		inline int GetKeyCode() const { return m_KeyCode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
-	protected: // protected£ºÖ»ÄÜÔÚ¼Ì³ĞËüµÄÀàÖĞ´´½¨Õâ¸öÀà
+	protected: // protectedï¼šåªèƒ½åœ¨ç»§æ‰¿å®ƒçš„ç±»ä¸­åˆ›å»ºè¿™ä¸ªç±»
 		KeyEvent(int keycode)
 			: m_KeyCode(keycode) { }
 

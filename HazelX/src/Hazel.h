@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 
 /**
- * ÕâÊÇ¸øÓ¦ÓÃ³ÌĞòÊ¹ÓÃµÄÍ·ÎÄ¼ş
+ * è¿™æ˜¯ç»™åº”ç”¨ç¨‹åºä½¿ç”¨çš„å¤´æ–‡ä»¶
  */
 #include "Hazel/Application.h"
 #include "Hazel/Layer.h"
@@ -13,6 +13,6 @@
 
 #include "Hazel/ImGui/ImGuiLayer.h"
 
-// ------ Entry Point Èë¿Úµã ------
+// ------ Entry Point å…¥å£ç‚¹ ------
 #include "Hazel/EntryPoint.h"
 // --------------------------------

@@ -1,6 +1,7 @@
 project "ImGui"
     kind "StaticLib"
     language "C++"
+    cppdialect "C++17"
     staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -19,10 +20,6 @@ project "ImGui"
         "imstb_textedit.h",
         "imstb_truetype.h",
         "imgui_demo.cpp",
-        -- "imgui_impl_glfw.cpp",
-        -- "imgui_impl_glfw.h",
-        -- "imgui_impl_opengl3.cpp",
-        -- "imgui_impl_opengl3.h",
     }
 
     defines
@@ -41,7 +38,14 @@ project "ImGui"
 
     filter "system:windows"
         systemversion "latest"
-        cppdialect "C++17"
 
-    filter { "system:windows", "configurations:Release" }
-        buildoptions "/MT"
+    -- filter { "system:windows", "configurations:Release" }
+    --     buildoptions "/MT"
+
+    filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "speed"

@@ -101,13 +101,6 @@ project "GLFW"
 		runtime "Debug"
 		symbols "on"
 
-	filter { "system:windows", "configurations:Debug-AS" }	
-		runtime "Debug"
-		symbols "on"
-		sanitize { "Address" }
-		runtimechecks "Off"
-    	incrementallink "Off"
-
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "speed"
@@ -116,3 +109,10 @@ project "GLFW"
 		runtime "Release"
 		optimize "speed"
         symbols "off"
+
+	filter { "system:windows", "configurations:Debug-AS" }	
+		runtime "Debug"
+		symbols "on"
+		sanitize { "Address" }
+		runtimechecks "Off"
+    	incrementallink "Off"

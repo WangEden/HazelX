@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Hazel/Core.h"
 #include "Layer.h"
@@ -24,8 +24,8 @@ namespace Hazel {
 	private:
 		std::vector<Layer*> m_Layers;
 		unsigned int m_LayerInsertIndex = 0;
-		// std::vector<Layer*>::iterator m_LayerInsert; // Ò»¸öµü´úÆ÷
-		// ::iterator begin()/end() ÈÃÕâ¸öÀàĞÍÖ§³Öµü´ú²Ù×÷£¬¼´£º
+		// std::vector<Layer*>::iterator m_LayerInsert; // ä¸€ä¸ªè¿­ä»£å™¨
+		// ::iterator begin()/end() è®©è¿™ä¸ªç±»å‹æ”¯æŒè¿­ä»£æ“ä½œï¼Œå³ï¼š
 		/*
 			for (Layer* layer : m_LayerStack) 
 			{

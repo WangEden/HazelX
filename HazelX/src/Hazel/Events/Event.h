@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
 #include "hzpch.h"
 #include "Hazel/Core.h"
 
 namespace Hazel {
 
-	// µ±Ç°ÊÂ¼şÏµÍ³ÊÇ×èÈûÊ½µÄ£¬ÒâÎ¶×Å£¬µ±ÊÂ¼ş·¢ÉúÊ±ĞèÒªÁ¢¼´»ñÈ¡·Ö·¢²¢´¦Àí
-	// Î´À´½«Í¨¹ıÔÚÊÂ¼ş×ÜÏßÖĞÌí¼ÓÊÂ¼ş»º³åµÄ·½Ê½¸Ä½ø
+	// å½“å‰äº‹ä»¶ç³»ç»Ÿæ˜¯é˜»å¡å¼çš„ï¼Œæ„å‘³ç€ï¼Œå½“äº‹ä»¶å‘ç”Ÿæ—¶éœ€è¦ç«‹å³è·å–åˆ†å‘å¹¶å¤„ç†
+	// æœªæ¥å°†é€šè¿‡åœ¨äº‹ä»¶æ€»çº¿ä¸­æ·»åŠ äº‹ä»¶ç¼“å†²çš„æ–¹å¼æ”¹è¿›
 
 	enum class EventType
 	{
@@ -17,7 +17,7 @@ namespace Hazel {
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 	};
 
-	enum EventCategory // Î»×Ö¶Î£¬ÕâÑùÊÂ¼ş¾ÍÄÜÊôÓÚ¶à¸öÀà±ğ 0001 | 0010 ¡ú 0011
+	enum EventCategory // ä½å­—æ®µï¼Œè¿™æ ·äº‹ä»¶å°±èƒ½å±äºå¤šä¸ªç±»åˆ« 0001 | 0010 â†’ 0011
 	{
 		None = 0,
 		EventCategoryApplication = BIT(0),
@@ -39,7 +39,7 @@ namespace Hazel {
 	public:
 		bool Handled = false;
 
-		virtual EventType GetEventType() const = 0; // const = 0 ±íÊ¾´¿Ğéº¯Êı£¬¼´±ØĞë±»ÊµÏÖ
+		virtual EventType GetEventType() const = 0; // const = 0 è¡¨ç¤ºçº¯è™šå‡½æ•°ï¼Œå³å¿…é¡»è¢«å®ç°
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
@@ -50,14 +50,14 @@ namespace Hazel {
 		}
 
 	//protected:
-		//bool m_Handled = false; // ¹æ¶¨ÊÂ¼şÊÇ·ñÏë±»¼ÌĞø´«²¥£¬ÕâÑùÏÂÃæµÄ²ã¾Í²»»áÔÙÖØ¸´´¦ÀíÊÂ¼ş
-		// ÊÂ¼ş»áÔÚ²ãÖ®¼ä´«²¥
+		//bool m_Handled = false; // è§„å®šäº‹ä»¶æ˜¯å¦æƒ³è¢«ç»§ç»­ä¼ æ’­ï¼Œè¿™æ ·ä¸‹é¢çš„å±‚å°±ä¸ä¼šå†é‡å¤å¤„ç†äº‹ä»¶
+		// äº‹ä»¶ä¼šåœ¨å±‚ä¹‹é—´ä¼ æ’­
 	};
 
 	class EventDispatcher
 	{
 		template<typename T>
-		using EventFn = std::function<bool(T&)>; // ´´½¨Ò»¸ö±ğÃû£¬Ö¸¶¨Ò»ÖÖº¯ÊıÀàĞÍ
+		using EventFn = std::function<bool(T&)>; // åˆ›å»ºä¸€ä¸ªåˆ«åï¼ŒæŒ‡å®šä¸€ç§å‡½æ•°ç±»å‹
 	public:
 		EventDispatcher(Event& event)
 			: m_Event(event)
@@ -65,12 +65,12 @@ namespace Hazel {
 		}
 
 		template<typename T>
-		bool Dispatch(EventFn<T> func) // ½ÓÊÕµÄÒ»¸ö²ÎÊıÎªboolÀàĞÍµÄº¯Êı
+		bool Dispatch(EventFn<T> func) // æ¥æ”¶çš„ä¸€ä¸ªå‚æ•°ä¸ºboolç±»å‹çš„å‡½æ•°
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
 				m_Event.Handled = func(*(T*)&m_Event); 
-				// *(T*)&m_Event ½«»ùÀàÖ¸Õë×ª»»³ÉÅÉÉúÀàÖ¸ÕëÔÙ½âÒıÓÃÎªT&£¬²¢×÷Îª²ÎÊıµ÷ÓÃ
+				// *(T*)&m_Event å°†åŸºç±»æŒ‡é’ˆè½¬æ¢æˆæ´¾ç”Ÿç±»æŒ‡é’ˆå†è§£å¼•ç”¨ä¸ºT&ï¼Œå¹¶ä½œä¸ºå‚æ•°è°ƒç”¨
 				return true;
 			}
 			return false;
@@ -88,7 +88,7 @@ namespace Hazel {
 
 #include "spdlog/fmt/fmt.h"
 
-// Ê¹ÓÃÄ£°åÆ¥Åä Hazel::Event ¼°ÆäËùÓĞÅÉÉúÀà
+// ä½¿ç”¨æ¨¡æ¿åŒ¹é… Hazel::Event åŠå…¶æ‰€æœ‰æ´¾ç”Ÿç±»
 template <typename T>
 struct fmt::formatter<T, std::enable_if_t<std::is_base_of<Hazel::Event, T>::value, char>>
 	: fmt::formatter<std::string> {

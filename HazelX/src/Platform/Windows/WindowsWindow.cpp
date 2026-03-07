@@ -1,4 +1,4 @@
-#include "hzpch.h"
+ï»¿#include "hzpch.h"
 #include "WindowsWindow.h"
 
 #include "Hazel/Events/ApplicationEvent.h"
@@ -9,7 +9,7 @@
 
 namespace Hazel {
 
-	static bool s_GLFWInitialized = false; // ÎªÁËÄÜ´´½¨¶à¸ö´°¿Ú
+	static bool s_GLFWInitialized = false; // ä¸ºäº†èƒ½åˆ›å»ºå¤šä¸ªçª—å£
 
 	static void GLFWErrorCallback(int error, const char* description)
 	{
@@ -55,7 +55,7 @@ namespace Hazel {
 		SetVSync(true);
 
 		// Set GLFW Callback
-		// ´°¿Úµ÷Õû´óĞ¡ÊÂ¼şµÄ»Øµ÷
+		// çª—å£è°ƒæ•´å¤§å°äº‹ä»¶çš„å›è°ƒ
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Width = width;
@@ -65,14 +65,14 @@ namespace Hazel {
 			data.EventCallback(event);
 		});
 
-		// ´°¿Ú¹Ø±ÕÊÂ¼şµÄ»Øµ÷
+		// çª—å£å…³é—­äº‹ä»¶çš„å›è°ƒ
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
 			data.EventCallback(event);
 		});
 
-		// °´¼ü»Øµ÷
+		// æŒ‰é”®å›è°ƒ
 		glfwSetKeyCallback(m_Window, [](GLFWwindow * window, int key, int scancode, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			switch (action)
@@ -106,7 +106,7 @@ namespace Hazel {
 		});
 
 
-		// Êó±êÊÂ¼ş»Øµ÷
+		// é¼ æ ‡äº‹ä»¶å›è°ƒ
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			switch (action)
@@ -155,9 +155,9 @@ namespace Hazel {
 	void WindowsWindow::SetVSync(bool enabled)
 	{
 		if (enabled)
-			glfwSwapInterval(1); // µÈ´ıÒ»Ö¡äÖÈ¾Íêºó
+			glfwSwapInterval(1); // ç­‰å¾…ä¸€å¸§æ¸²æŸ“å®Œå
 		else
-			glfwSwapInterval(0); // ²»µÈ´ı
+			glfwSwapInterval(0); // ä¸ç­‰å¾…
 
 		m_Data.VSync = enabled;
 	}

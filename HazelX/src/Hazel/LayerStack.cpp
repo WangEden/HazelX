@@ -1,4 +1,4 @@
-#include "hzpch.h"
+ï»¿#include "hzpch.h"
 #include "LayerStack.h"
 
 namespace Hazel {
@@ -15,14 +15,14 @@ namespace Hazel {
 
 	void LayerStack::PushLayer(Layer* layer)
 	{
-		// ÆÕÍ¨²ã½±±»²åÈëµ½Ç°°ë²¿·Ö
+		// æ™®é€šå±‚å¥–è¢«æ’å…¥åˆ°å‰åŠéƒ¨åˆ†
 		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
 		m_LayerInsertIndex++;
 	}
 
 	void LayerStack::PushOverlay(Layer* overlay)
 	{
-		// µş¼Ó²ã½«±»²åÈëµ½ºó°ë²¿·Ö
+		// å åŠ å±‚å°†è¢«æ’å…¥åˆ°ååŠéƒ¨åˆ†
 		m_Layers.emplace_back(overlay);
 	}
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Core.h"
 
@@ -38,6 +38,6 @@ namespace Hazel {
 		static Application* s_Instance;
 	};
 
-	// To be defined in CLIEN ÇëÔÚ¿Í»§¶Ë¶¨ÒåÕâÐ©
+	// To be defined in CLIEN è¯·åœ¨å®¢æˆ·ç«¯å®šä¹‰è¿™äº›
 	Application * CreateApplication();
 }

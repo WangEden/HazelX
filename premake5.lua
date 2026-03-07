@@ -29,9 +29,10 @@ include "HazelX/vendor/imgui"
 
 project "HazelX"
     location "HazelX"
-    kind "SharedLib" -- 动态链接库
+    kind "StaticLib"
     language "C++"
-    staticruntime "off"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -45,6 +46,11 @@ project "HazelX"
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
+    }
+
+    defines
+    {
+        "_CRT_SECURE_NO_WARNINGS"
     }
 
     includedirs
@@ -66,7 +72,6 @@ project "HazelX"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
         systemversion "latest"
 
         defines
@@ -77,34 +82,27 @@ project "HazelX"
             "_WINDLL"
         }
 
-        postbuildcommands
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-        }
-    
     filter "configurations:Debug"
         defines "HZ_DEBUG"
-        -- buildoptions "/MDd"
         runtime "Debug"
-        symbols "On" -- 开启调试符号
+        symbols "on"
 
     filter "configurations:Release"
         defines "HZ_RELEASE"
-        -- buildoptions "/MD"
         runtime "Release"
-        optimize "On" -- 开启优化
+        optimize "on"
 
     filter "configurations:Dist"
         defines "HZ_DIST"
-        -- buildoptions "/MD"
         runtime "Release"
-        optimize "On" -- 开启优化
+        optimize "on"
 
 project "Sandbox"
     location "Sandbox"
-    kind "ConsoleApp" -- 控制台应用程序
+    kind "ConsoleApp"
     language "C++"
-    staticruntime "off"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -129,8 +127,6 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
-        -- staticruntime "On" -- 静态链接运行时库
         systemversion "latest"
 
         defines
@@ -140,18 +136,15 @@ project "Sandbox"
 
     filter "configurations:Debug"
         defines "HZ_DEBUG"
-        -- buildoptions "/MDd"
         runtime "Debug"
-        symbols "On" -- 开启调试符号
+        symbols "on"
 
     filter "configurations:Release"
         defines "HZ_RELEASE"    
-        -- buildoptions "/MD"
         runtime "Release"
-        optimize "On" -- 开启优化
+        optimize "on"
 
     filter "configurations:Dist"
         defines "HZ_DIST"
-        -- buildoptions "/MD"
         runtime "Release"
-        optimize "On" -- 开启优化
+        optimize "on"

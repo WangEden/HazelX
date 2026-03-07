@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "hzpch.h"
 
@@ -24,7 +24,7 @@ namespace Hazel {
 	class HAZEL_API Window
 	{
 	public:
-		using EventCallbackFn = std::function<void(Event&)>; // ÊÂ¼ş»Øµ÷º¯Êı
+		using EventCallbackFn = std::function<void(Event&)>; // äº‹ä»¶å›è°ƒå‡½æ•°
 
 		virtual ~Window() {}
 
@@ -39,7 +39,7 @@ namespace Hazel {
 
 		virtual void* GetNativeWindow() const = 0;
 
-		// ĞèÒª¾ßÌåÆ½Ì¨¾ßÌåÊµÏÖÕâ¸öCreateº¯Êı
+		// éœ€è¦å…·ä½“å¹³å°å…·ä½“å®ç°è¿™ä¸ªCreateå‡½æ•°
 		static Window* Create(const WindowProps& props = WindowProps());
 	};
 

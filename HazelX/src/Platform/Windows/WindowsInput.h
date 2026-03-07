@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Hazel/Input.h"
 
 namespace Hazel {
 
-	// ²»ĞèÒªµ¼³öµ½dll
+	// ä¸éœ€è¦å¯¼å‡ºåˆ°dll
 	class WindowsInput : public Input
 	{
 	protected:
