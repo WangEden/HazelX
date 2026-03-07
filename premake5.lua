@@ -53,14 +53,18 @@ project "HazelX"
         "_CRT_SECURE_NO_WARNINGS"
     }
 
-    includedirs
+    externalincludedirs
     {
         "%{prj.name}/vendor/spdlog/include",
-        "%{prj.name}/src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.GLM}",
+    }
+
+    includedirs
+    {
+        "%{prj.name}/src",
     }
 
     links
@@ -113,12 +117,16 @@ project "Sandbox"
         "%{prj.name}/src/**.cpp"
     }
 
-    includedirs
+    externalincludedirs
     {
         "HazelX/vendor/spdlog/include",
-        "HazelX/src",
-        "HazelX/vendor", --
         "%{IncludeDir.GLM}",
+        "HazelX/vendor"
+    }
+
+    includedirs
+    {
+        "HazelX/src"
     }
 
     links
