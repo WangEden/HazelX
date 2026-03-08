@@ -13,3 +13,6 @@ HazelX/vendor/*/*/
 
 # Visual Studio
 *.user
+
+# Sandbox
+Sandbox/imgui.ini
