@@ -65,7 +65,7 @@ namespace Hazel {
 		}
 
 		template<typename T>
-		bool Dispatch(EventFn<T> func) // 接收的一个参数为bool类型的函数
+		bool Dispatch(EventFn<T> func) // 接收的一个返回值为bool类型的函数
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{

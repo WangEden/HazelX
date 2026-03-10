@@ -57,6 +57,7 @@ namespace Hazel {
 		// Set GLFW Callback
 		// 窗口调整大小事件的回调
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+			// 触发事件后，lambda内部临时修改WindowData绑定的值
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Width = width;
 			data.Height = height;
@@ -148,7 +149,7 @@ namespace Hazel {
 
 	void WindowsWindow::OnUpdate()
 	{
-		glfwPollEvents();
+		glfwPollEvents(); // 获取事件
 		glfwSwapBuffers(m_Window);
 	}
 
