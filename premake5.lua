@@ -11,10 +11,6 @@ workspace "HazelX"
         "Dist" -- Distribution 完全没有日志的发布版本
     }
 
-    filter "system:windows"
-        buildoptions { "/utf-8" }
-
-
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
@@ -37,8 +33,14 @@ project "HazelX"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-    pchheader "hzpch.h"
-    pchsource "HazelX/src/hzpch.cpp"
+    filter "system:windows"
+        pchheader "hzpch.h"
+        pchsource "HazelX/src/hzpch.cpp"
+
+    filter "system:macosx"
+
+
+    filter "" -- 重置过滤
 
     files
     {
@@ -72,11 +74,12 @@ project "HazelX"
         "GLFW",
         "Glad",
         "ImGui",
-        "opengl32.lib"
     }
 
     filter "system:windows"
         systemversion "latest"
+        buildoptions { "/utf-8" }
+        links { "opengl32.lib" }
 
         defines
         {
@@ -84,6 +87,22 @@ project "HazelX"
             "HZ_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
             "_WINDLL"
+        }
+
+    filter "system:macosx"
+        staticruntime "off" -- Mac 上通常不强制静态链接系统库
+        links
+        {
+            "OpenGL.framework",
+            "Cocoa.framework",
+            "IOKit.framework",
+            "CoreVideo.framework",
+            "QuartzCore.framework"
+        }
+        defines
+        {
+            "HZ_PLATFORM_MACOS",
+            "GLFW_INCLUDE_NONE"
         }
 
     filter "configurations:Debug"
@@ -141,6 +160,9 @@ project "Sandbox"
         {
             "HZ_PLATFORM_WINDOWS"
         }
+
+    filter "system:macosx"
+        defines { "HZ_PLATFORM_MACOS" }
 
     filter "configurations:Debug"
         defines "HZ_DEBUG"
