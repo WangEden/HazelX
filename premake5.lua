@@ -11,17 +11,20 @@ workspace "HazelX"
         "Dist" -- Distribution 完全没有日志的发布版本
     }
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+    filter "system:windows"
+        buildoptions { "/utf-8" }
 
-IncludeDir = {}
-IncludeDir["GLFW"] = "HazelX/vendor/GLFW/include"
-IncludeDir["Glad"] = "HazelX/vendor/Glad/include"
-IncludeDir["ImGui"] = "HazelX/vendor/imgui"
-IncludeDir["GLM"] = "HazelX/vendor/glm"
+    outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-include "HazelX/vendor/GLFW" -- 链接到GLFW子模块中的premake5.lua
-include "HazelX/vendor/Glad"
-include "HazelX/vendor/imgui"
+    IncludeDir = {}
+    IncludeDir["GLFW"] = "HazelX/vendor/GLFW/include"
+    IncludeDir["Glad"] = "HazelX/vendor/Glad/include"
+    IncludeDir["ImGui"] = "HazelX/vendor/imgui"
+    IncludeDir["GLM"] = "HazelX/vendor/glm"
+
+    include "HazelX/vendor/GLFW" -- 链接到GLFW子模块中的premake5.lua
+    include "HazelX/vendor/Glad"
+    include "HazelX/vendor/imgui"
 
 project "HazelX"
     location "HazelX"
@@ -37,10 +40,8 @@ project "HazelX"
         pchheader "hzpch.h"
         pchsource "HazelX/src/hzpch.cpp"
 
-    filter "system:macosx"
-
-
-    filter "" -- 重置过滤
+    -- filter "system:macosx"
+    -- filter "" -- 重置过滤
 
     files
     {
@@ -78,7 +79,6 @@ project "HazelX"
 
     filter "system:windows"
         systemversion "latest"
-        buildoptions { "/utf-8" }
         links { "opengl32.lib" }
 
         defines

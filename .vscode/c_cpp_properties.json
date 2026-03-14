@@ -3,11 +3,11 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
                 "${workspaceFolder}/HazelX/src",
                 "${workspaceFolder}/HazelX/src/Hazel",
                 "${workspaceFolder}/HazelX/src/Hazel/Events",
                 "${workspaceFolder}/HazelX/src/Hazel/ImGui",
+                "${workspaceFolder}/HazelX/src/Hazel/Renderer",
                 "${workspaceFolder}/HazelX/src/Platform/OpenGL",
                 "${workspaceFolder}/HazelX/src/Platform/Windows",
                 "${workspaceFolder}/HazelX/vendor/spdlog/include",
