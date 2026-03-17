@@ -29,34 +29,60 @@ namespace Hazel {
 			1.顶点数组、2.顶点缓冲、3.索引缓冲
 			4.着色器（可不写，GPU可能有默认着色器）
 		*/
-		glGenVertexArrays(1, &m_VertexArray); // 生成一个顶点数组对象
-		glBindVertexArray(m_VertexArray); // 绑定顶点数组对象
+		m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f, // 左下
-			 0.5f, -0.5f, 0.0f, // 右下
-			 0.0f,  0.5f, 0.0f  // 上
+		float vertices[3 * 7] = {
+			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f, // 左下
+			 0.5f, -0.5f, 0.0f, 0.0f, 0.2f, 0.8f, 1.0f, // 右下
+			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f, // 上
 		};
 
+		std::shared_ptr<VertexBuffer> m_VertexBuffer;
+		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+
 		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-		//m_VertexBuffer->Bind();
+		BufferLayout layout = {
+			{ ShaderDataType::Float3, "a_Position"},
+			{ ShaderDataType::Float4, "a_Color"},
+		};
+		m_VertexBuffer->SetLayout(layout);
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		glEnableVertexAttribArray(0); // 启用顶点属性数组，参数0表示第一个属性
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr); // 定义顶点属性布局
-
-		unsigned int indices[3] = { 0, 1, 2 }; // 定义索引数据，坐下开始逆时针绘制三角形
+		uint32_t indices[3] = { 0, 1, 2 }; // 定义索引数据，坐下开始逆时针绘制三角形
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		m_SquareVA.reset(VertexArray::Create());
+		float squareVertices[3 * 4] = {
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f,
+		};
+
+		m_VertexBuffer.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		m_VertexBuffer->SetLayout({
+			{ShaderDataType::Float3, "a_Position"},
+		});
+		m_SquareVA->AddVertexBuffer(m_VertexBuffer);
+
+		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		m_IndexBuffer.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		m_SquareVA->SetIndexBuffer(m_IndexBuffer);
 
 		std::string vertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec4 a_Color;
 
 			out vec3 v_Position; // 传递给片段着色器的变量
+			out vec4 v_Color;
 		
 			void main()
 			{
 				v_Position = a_Position;
+				v_Color = a_Color;
 				gl_Position = vec4(a_Position, 1.0);
 			}
 		)";
@@ -67,14 +93,46 @@ namespace Hazel {
 			layout(location = 0) out vec4 color;
 
 			in vec3 v_Position;
+			in vec4 v_Color;
 			
 			void main()
 			{
 				color = vec4(v_Position * 0.5 + 0.5, 1.0);
+				color = v_Color;
 			}
 		)";
 
 		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
+
+		std::string blueShaderVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+
+			out vec3 v_Position;
+		
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+
+		std::string blueShaderFragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+
+			in vec3 v_Position;
+			in vec4 v_Color;
+			
+			void main()
+			{
+				color = vec4(0.2, 0.3, 0.8, 1.0);
+			}
+		)";
+
+		m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
 	}
 
 	Application::~Application()
@@ -113,9 +171,13 @@ namespace Hazel {
 			glClearColor(0.1f, 0.1f, 0.1f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			m_BlueShader->Bind();
+			m_SquareVA->Bind();
+			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffers()->GetCount(), GL_UNSIGNED_INT, nullptr);
+
 			m_Shader->Bind();
-			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr); // 绘制三角形，参数1表示绘制模式，参数2表示索引数量，参数3表示索引数据类型，参数4表示索引数据在缓冲区中的偏移量
+			m_VertexArray->Bind();
+			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffers()->GetCount(), GL_UNSIGNED_INT, nullptr); // 绘制三角形，参数1表示绘制模式，参数2表示索引数量，参数3表示索引数据类型，参数4表示索引数据在缓冲区中的偏移量
 			
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate(); // 提交要渲染的层
