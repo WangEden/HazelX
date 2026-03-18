@@ -3,7 +3,7 @@
 
 #include "Hazel/Log.h"
 
-#include <glad/glad.h>
+#include "Hazel/Renderer/Renderer.h"
 
 #include "Input.h"
 
@@ -168,17 +168,19 @@ namespace Hazel {
 	{
 		while (m_Running)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			RenderCommand::Clear();
 
-			m_BlueShader->Bind();
-			m_SquareVA->Bind();
-			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffers()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::BeginScene();
+			{
+				m_BlueShader->Bind();
+				Renderer::Submit(m_SquareVA); // 提交到一个缓冲区，然后在其他线程上渲染
 
-			m_Shader->Bind();
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffers()->GetCount(), GL_UNSIGNED_INT, nullptr); // 绘制三角形，参数1表示绘制模式，参数2表示索引数量，参数3表示索引数据类型，参数4表示索引数据在缓冲区中的偏移量
-			
+				m_Shader->Bind();
+				Renderer::Submit(m_VertexArray);
+			}
+			Renderer::EndScene();
+
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate(); // 提交要渲染的层
 
