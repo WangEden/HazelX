@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
-#include "Hazel/Layer.h"
+#include "Hazel/Core/Layer.h"
 
-#include "Hazel/Events/ApplicationEvent.h"
-#include "Hazel/Events/KeyEvent.h"
-#include "Hazel/Events/MouseEvent.h"
+#include "Hazel/Core/Events/ApplicationEvent.h"
+#include "Hazel/Core/Events/KeyEvent.h"
+#include "Hazel/Core/Events/MouseEvent.h"
 
 struct ImGuiIO;
 

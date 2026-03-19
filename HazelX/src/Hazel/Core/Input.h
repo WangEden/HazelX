@@ -3,7 +3,7 @@
 // 管理输入的类应该是全局的，是 static，一个应用程序只有一个
 // 窗口则不一样，可以有多个
 
-#include "Hazel/Core.h"
+#include "Hazel/Core/Base.h"
 
 namespace Hazel {
 
