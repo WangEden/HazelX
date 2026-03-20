@@ -1,4 +1,4 @@
-#include <Hazel.h>
+﻿#include <Hazel.h>
 
 #include "imgui/imgui.h"
 
@@ -32,6 +32,11 @@ public:
 			if (e.GetKeyCode() == HZ_KEY_TAB)
 				HZ_TRACE("TAB is pressed (event)");
 			HZ_TRACE("{0}", (char)e.GetKeyCode());
+		}
+		else if (event.GetEventType() == Hazel::EventType::MouseScrolled)
+		{
+			Hazel::MouseScrolledEvent& e = (Hazel::MouseScrolledEvent&)event;
+			HZ_TRACE("Mouse scrolled: {0}, {1}", e.GetXOffset(), e.GetYOffset());
 		}
 	}
 };
