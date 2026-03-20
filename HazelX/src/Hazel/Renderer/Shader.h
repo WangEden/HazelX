@@ -1,7 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include <cstdint>
 #include <string>
+
+#include <glm/glm.hpp>
 
 namespace Hazel {
 
@@ -13,6 +15,8 @@ namespace Hazel {
 
     void Bind();
     void Unbind();
+
+	void UploadUniformMat4(const std::string& name, glm::mat4& matrix);
   private:
     uint32_t m_RendererID;
   };

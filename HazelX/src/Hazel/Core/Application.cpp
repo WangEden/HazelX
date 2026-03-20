@@ -14,6 +14,7 @@ namespace Hazel {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
+		: m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 	{
 		HZ_CORE_ASSERT(!s_Instance, "Application already exist!");
 		s_Instance = this;
@@ -76,6 +77,8 @@ namespace Hazel {
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position; // 传递给片段着色器的变量
 			out vec4 v_Color;
 		
@@ -83,7 +86,7 @@ namespace Hazel {
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -109,12 +112,14 @@ namespace Hazel {
 			
 			layout(location = 0) in vec3 a_Position;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 		
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -174,9 +179,11 @@ namespace Hazel {
 			Renderer::BeginScene();
 			{
 				m_BlueShader->Bind();
+				m_BlueShader->UploadUniformMat4("u_ViewProjection", m_Camera.GetViewProjectionMatrix());
 				Renderer::Submit(m_SquareVA); // 提交到一个缓冲区，然后在其他线程上渲染
 
 				m_Shader->Bind();
+				m_Shader->UploadUniformMat4("u_ViewProjection", m_Camera.GetViewProjectionMatrix());
 				Renderer::Submit(m_VertexArray);
 			}
 			Renderer::EndScene();
