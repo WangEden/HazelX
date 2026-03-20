@@ -6,7 +6,7 @@ class ExampleLayer : public Hazel::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), cameraPosition(0.0f, 0.0f, 0.0f)
 	{
 		m_VertexArray.reset(Hazel::VertexArray::Create());
 
@@ -120,9 +120,19 @@ public:
 
 	void OnUpdate() override
 	{
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_A))
+			cameraPosition.x -= cameraSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D))
+			cameraPosition.x += cameraSpeed;
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_W))
+			cameraPosition.y += cameraSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_S))
+			cameraPosition.y -= cameraSpeed;
+
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Hazel::RenderCommand::Clear();
 
+		m_Camera.SetPosition(cameraPosition);
 		//m_Camera.SetRotation(45.0f);
 
 		Hazel::Renderer::BeginScene(m_Camera);
@@ -142,19 +152,14 @@ public:
 
 	void OnEvent(Hazel::Event& event) override
 	{
-		if (event.GetEventType() == Hazel::EventType::KeyPressed)
-		{
-			Hazel::KeyPressedEvent& e = (Hazel::KeyPressedEvent&)event;
-			if (e.GetKeyCode() == HZ_KEY_TAB)
-				HZ_TRACE("TAB is pressed (event)");
-			HZ_TRACE("{0}", (char)e.GetKeyCode());
-		}
-		else if (event.GetEventType() == Hazel::EventType::MouseScrolled)
-		{
-			Hazel::MouseScrolledEvent& e = (Hazel::MouseScrolledEvent&)event;
-			HZ_TRACE("Mouse scrolled: {0}, {1}", e.GetXOffset(), e.GetYOffset());
+		Hazel::EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<Hazel::KeyPressedEvent>(HZ_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
+	}
 
-		}
+	bool OnKeyPressedEvent(Hazel::KeyPressedEvent& event)
+	{
+
+		return false;
 	}
 
 private:
@@ -165,6 +170,8 @@ private:
 	std::shared_ptr<Hazel::VertexArray> m_SquareVA;
 
 	Hazel::OrthographicCamera m_Camera;
+	glm::vec3 cameraPosition;
+	float cameraSpeed = 0.1f;
 };
 
 class Sandbox : public Hazel::Application
