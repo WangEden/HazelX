@@ -5,7 +5,7 @@
 
 namespace Hazel {
 
-	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+	/*static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 	{
 		switch (type)
 		{
@@ -76,6 +76,6 @@ namespace Hazel {
 		indexBuffer->Bind();
 
 		m_IndexBuffers = indexBuffer;
-	}
+	}*/
 
 }

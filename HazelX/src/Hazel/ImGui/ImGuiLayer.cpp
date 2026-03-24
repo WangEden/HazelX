@@ -17,6 +17,10 @@ namespace Hazel {
 		: Layer("ImGuiLayer")
 	{
 	}
+
+    ImGuiLayer::ImGuiLayer(const std::string& name)
+    {
+    }
 	
 	ImGuiLayer::~ImGuiLayer()
 	{
@@ -97,8 +101,8 @@ namespace Hazel {
 
     void ImGuiLayer::OnImGuiRender()
     {
-        static bool show = true;
-        ImGui::ShowDemoWindow(&show);
+        //static bool show = true;
+        //ImGui::ShowDemoWindow(&show);
     }
 
 }

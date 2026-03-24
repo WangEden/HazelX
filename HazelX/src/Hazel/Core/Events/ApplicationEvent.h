@@ -1,9 +1,12 @@
-#pragma once
+﻿#pragma once
 
 #include "Event.h"
 
+#include <sstream>
+
 namespace Hazel {
 
+	// TODO: Should this store previous size?
 	class HAZEL_API WindowResizeEvent : public Event
 	{
 	public:

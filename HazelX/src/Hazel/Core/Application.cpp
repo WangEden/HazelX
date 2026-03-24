@@ -22,8 +22,10 @@ namespace Hazel {
 		// 将事件回调函数绑定到窗口事件系统中，这样当窗口事件发生时就会调用Application的OnEvent方法
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
-		m_ImGuiLayer = new ImGuiLayer();
+		m_ImGuiLayer = new ImGuiLayer("ImGui");
 		PushOverlay(m_ImGuiLayer);
+
+		Renderer::Init();
 	}
 
 	Application::~Application()
@@ -42,9 +44,38 @@ namespace Hazel {
 		layer->OnAttach();
 	}
 
+	void Application::RenderImGui()
+	{
+		m_ImGuiLayer->Begin();
+		for (Layer* layer : m_LayerStack)
+			layer->OnImGuiRender();
+
+		m_ImGuiLayer->End();
+	}
+
+	void Application::Run()
+	{
+		OnInit();
+		while (m_Running)
+		{
+			for (Layer* layer : m_LayerStack)
+				layer->OnUpdate(); // 提交要渲染的层
+
+			// Render ImGui on render thread
+			Application* app = this;
+			HZ_RENDER_1(app, { app->RenderImGui(); });
+
+			Renderer::Get().WaitAndRender();
+
+			m_Window->OnUpdate();
+		}
+		OnShutdown();
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
@@ -55,20 +86,9 @@ namespace Hazel {
 		}
 	}
 
-	void Application::Run()
+	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		while (m_Running)
-		{
-			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate(); // 提交要渲染的层
-
-			m_ImGuiLayer->Begin();
-			for(Layer* layer : m_LayerStack)
-				layer->OnImGuiRender();
-			m_ImGuiLayer->End();
-			
-			m_Window->OnUpdate();
-		}
+		return false;
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
@@ -76,6 +96,5 @@ namespace Hazel {
 		m_Running = false;
 		return true;
 	}
-
 
 }

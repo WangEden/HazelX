@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Hazel/Renderer/Renderer.h"
+
 namespace Hazel {
 
 	enum class ShaderDataType
@@ -103,12 +105,21 @@ namespace Hazel {
 		virtual ~VertexBuffer() {}
 
 		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		//virtual void Unbind() const = 0;
 
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
-		static VertexBuffer* Create(float* vertices, uint32_t size);
+		//static VertexBuffer* Create(float* vertices, uint32_t size);
+
+		///////////////////////////////////////////////////////////////////
+		////////////////////// Copy from HazelSource //////////////////////
+		virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0) = 0;
+		virtual unsigned int GetSize() const = 0;
+		virtual RendererID GetRendererID() const = 0;
+		static VertexBuffer* Create(unsigned int size = 0);
+		////////////////////// Copy from HazelSource //////////////////////
+		///////////////////////////////////////////////////////////////////
 	};
 
 	class IndexBuffer
@@ -117,10 +128,19 @@ namespace Hazel {
 		virtual ~IndexBuffer() {}
 
 		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		//virtual void Unbind() const = 0;
 
 		virtual uint32_t GetCount() const = 0;
 
-		static IndexBuffer* Create(uint32_t* indices, uint32_t count);
+		//static IndexBuffer* Create(uint32_t* indices, uint32_t count);
+
+		///////////////////////////////////////////////////////////////////
+		////////////////////// Copy from HazelSource //////////////////////
+		virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0) = 0;
+		virtual unsigned int GetSize() const = 0;
+		virtual RendererID GetRendererID() const = 0;
+		static IndexBuffer* Create(unsigned int size = 0);
+		////////////////////// Copy from HazelSource //////////////////////
+		///////////////////////////////////////////////////////////////////
 	};
 }
