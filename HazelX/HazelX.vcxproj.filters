@@ -1387,6 +1387,8 @@
     <ClInclude Include="src\Hazel\Renderer\RenderCommandQueue.h" />
     <ClInclude Include="src\Hazel\Renderer\Texture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\Hazel\Renderer\FrameBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">
@@ -1438,5 +1440,6 @@
     <ClCompile Include="src\Hazel\Renderer\RenderCommandQueue.cpp" />
     <ClCompile Include="src\Hazel\Renderer\Texture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
   </ItemGroup>
 </Project>
