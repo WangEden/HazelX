@@ -167,6 +167,12 @@ project "Sandbox"
             "HZ_PLATFORM_WINDOWS"
         }
 
+        postbuildcommands 
+        {
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\"")
+        }
+
     filter "system:macosx"
         defines { "HZ_PLATFORM_MACOS" }
 
