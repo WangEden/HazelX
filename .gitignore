@@ -2,7 +2,15 @@
 .vs/
 bin/
 bin-int/
+
 HazelX/vendor/*/*/
+!HazelX/vendor/*/include/
+!HazelX/vendor/*/lib/
+!HazelX/vendor/*/src/
+!HazelX/vendor/*/premake5.lua
+!HazelX/vendor/*/*.h
+!HazelX/vendor/*/*.cpp
+!HazelX/vendor/*/*.txt
 !HazelX/vendor/glm/glm/
 !HazelX/vendor/imgui/backends/
 !HazelX/vendor/*/include/
