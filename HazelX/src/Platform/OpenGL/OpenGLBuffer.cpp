@@ -26,6 +26,7 @@ namespace Hazel {
 
 	void OpenGLVertexBuffer::SetData(void* buffer, unsigned int size, unsigned int offset)
 	{
+		m_Size = size;
 		HZ_RENDER_S3(buffer, size, offset, {
 			glBindBuffer(GL_ARRAY_BUFFER, self->m_RendererID);
 			glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
@@ -33,39 +34,23 @@ namespace Hazel {
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 		});
-
 	}
 
 	void OpenGLVertexBuffer::Bind() const
 	{
 		HZ_RENDER_S({
 			glBindBuffer(GL_ARRAY_BUFFER, self->m_RendererID);
+
+			// TODO: Extremely temp, by default provide positions and texcoord attributes
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (const void*)(3 * sizeof(float)));
 		});
 	}
 	////////////////////// Copy from HazelSource //////////////////////
 	///////////////////////////////////////////////////////////////////
-
-	//OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
-	//{
-	//	glCreateBuffers(1, &m_RendererID);
-	//	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-	//	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW); // 将顶点数据传输到GPU,
-	//}
-
-	//OpenGLVertexBuffer::~OpenGLVertexBuffer()
-	//{
-	//	glDeleteBuffers(1, &m_RendererID);
-	//}
-
-	//void OpenGLVertexBuffer::Bind() const
-	//{
-	//	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-	//}
-
-	//void OpenGLVertexBuffer::Unbind() const
-	//{
-	//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//}
 
 	// ==================================== Index Buffer ============================
 
@@ -88,6 +73,7 @@ namespace Hazel {
 
 	void OpenGLIndexBuffer::SetData(void* buffer, unsigned int size, unsigned int offset)
 	{
+		m_Size = size;
 		HZ_RENDER_S3(buffer, size, offset, {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self->m_RendererID);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
@@ -102,28 +88,5 @@ namespace Hazel {
 	}
 	////////////////////// Copy from HazelSource //////////////////////
 	///////////////////////////////////////////////////////////////////
-
-	//OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
-	//	: m_Count(count)
-	//{
-	//	glCreateBuffers(1, &m_RendererID);
-	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-	//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW); // 将顶点数据传输到GPU,
-	//}
-
-	//OpenGLIndexBuffer::~OpenGLIndexBuffer()
-	//{
-	//	glDeleteBuffers(1, &m_RendererID);
-	//}
-
-	//void OpenGLIndexBuffer::Bind() const
-	//{
-	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-	//}
-
-	//void OpenGLIndexBuffer::Unbind() const
-	//{
-	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	//}
 
 }

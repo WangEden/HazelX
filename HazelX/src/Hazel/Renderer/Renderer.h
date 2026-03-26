@@ -1,11 +1,7 @@
 ﻿#pragma once
 
-//#include "RenderCommand.h"
 #include "RenderCommandQueue.h"
 #include "RendererAPI.h"
-
-#include "OrthographicCamera.h"
-#include "Shader.h"
 
 namespace Hazel {
 
@@ -15,35 +11,32 @@ namespace Hazel {
 		///////////////////////////////////////////////////////////////////
 		////////////////////// Copy from HazelSource //////////////////////
 		typedef void(*RenderCommandFn)(void*);
+
 		static void Clear();
 		static void Clear(float r, float g, float b, float a = 1.0f);
 		static void SetClearColor(float r, float g, float b, float a);
-		static void DrawIndexed(unsigned int count);
+
+		static void DrawIndexed(unsigned int count, bool depthTest = true);
+
 		static void ClearMagenta();
+
 		static void Init();
+
 		static void* Submit(RenderCommandFn fn, unsigned int size)
 		{
 			return s_Instance->m_CommandQueue.Allocate(fn, size);
 		}
+
 		void WaitAndRender();
+
 		inline static Renderer& Get() { return *s_Instance; }
 		////////////////////// Copy from HazelSource //////////////////////
 		///////////////////////////////////////////////////////////////////
-
-		//static void BeginScene(OrthographicCamera& camera);
-		//static void EndScene();
-
-		//static void Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>&vertexArray);
-		//inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	private:
-		struct SceneData
-		{
-			glm::mat4 ViewProjectionMatrix;
-		};
-		static SceneData* m_SceneData;
 		///////////////////////////////////////////////////////////////////
 		////////////////////// Copy from HazelSource //////////////////////
 		static Renderer* s_Instance;
+
 		RenderCommandQueue m_CommandQueue;
 		////////////////////// Copy from HazelSource //////////////////////
 		///////////////////////////////////////////////////////////////////

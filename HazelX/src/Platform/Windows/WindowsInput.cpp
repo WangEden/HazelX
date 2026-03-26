@@ -41,4 +41,10 @@ namespace Hazel {
 		auto [x, y] = GetMousePositionImpl(); // C++17特有，否则得用get<0>()
 		return y;
 	}
+
+	//float WindowsInput::GetMouseScrollYImpl()
+	//{
+	//	auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+
+	//}
 }

@@ -59,7 +59,7 @@
     <IntDir>$(ProjectDir)..\bin-int\Debug-windows-x86_64\Sandbox\</IntDir>
     <TargetName>Sandbox</TargetName>
     <TargetExt>.exe</TargetExt>
-    <ExternalIncludePath>..\HazelX\vendor\spdlog\include;..\HazelX\vendor\glm;..\HazelX\vendor;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\HazelX\vendor\spdlog\include;..\HazelX\vendor\glm;..\HazelX\vendor\Glad\include;..\HazelX\vendor;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -67,7 +67,7 @@
     <IntDir>$(ProjectDir)..\bin-int\Release-windows-x86_64\Sandbox\</IntDir>
     <TargetName>Sandbox</TargetName>
     <TargetExt>.exe</TargetExt>
-    <ExternalIncludePath>..\HazelX\vendor\spdlog\include;..\HazelX\vendor\glm;..\HazelX\vendor;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\HazelX\vendor\spdlog\include;..\HazelX\vendor\glm;..\HazelX\vendor\Glad\include;..\HazelX\vendor;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -75,7 +75,7 @@
     <IntDir>$(ProjectDir)..\bin-int\Dist-windows-x86_64\Sandbox\</IntDir>
     <TargetName>Sandbox</TargetName>
     <TargetExt>.exe</TargetExt>
-    <ExternalIncludePath>..\HazelX\vendor\spdlog\include;..\HazelX\vendor\glm;..\HazelX\vendor;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\HazelX\vendor\spdlog\include;..\HazelX\vendor\glm;..\HazelX\vendor\Glad\include;..\HazelX\vendor;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -93,6 +93,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\HazelX\vendor\assimp\lib\x64\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
     </ProjectReference>
@@ -117,6 +118,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>..\HazelX\vendor\assimp\lib\x64\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
     </ProjectReference>
@@ -141,6 +143,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>..\HazelX\vendor\assimp\lib\x64\assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
     </ProjectReference>

@@ -46,9 +46,12 @@ project "HazelX"
     files
     {
         "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.c", 
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/**.hpp", 
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
+        "%{prj.name}/vendor/stb",
     }
 
     defines
@@ -58,16 +61,18 @@ project "HazelX"
 
     externalincludedirs
     {
-        "%{prj.name}/vendor/spdlog/include",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.GLM}",
+        "%{prj.name}/vendor/spdlog/include",
+        "%{prj.name}/vendor/assimp/include",
     }
 
     includedirs
     {
         "%{prj.name}/src",
+        "%{prj.name}/vendor/stb/include",
     }
 
     links
@@ -140,6 +145,7 @@ project "Sandbox"
     {
         "HazelX/vendor/spdlog/include",
         "%{IncludeDir.GLM}",
+        "%{IncludeDir.Glad}",
         "HazelX/vendor"
     }
 
@@ -169,12 +175,27 @@ project "Sandbox"
         runtime "Debug"
         symbols "on"
 
+        links
+        {
+			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+        }
+
     filter "configurations:Release"
         defines "HZ_RELEASE"    
         runtime "Release"
         optimize "on"
 
+        links
+		{
+			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+		}
+
     filter "configurations:Dist"
         defines "HZ_DIST"
         runtime "Release"
         optimize "on"
+
+        links
+		{
+			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+		}

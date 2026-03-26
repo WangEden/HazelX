@@ -70,17 +70,25 @@ namespace Hazel {
 			if (UniformIndex >= U) return;
 
 			if constexpr (std::is_same_v<T, float>) {
-				Uniforms[UniformIndex] = { UniformType::Float, (uint32_t)Cursor, name };
+				Uniforms[UniformIndex++] = { UniformType::Float, (uint32_t)Cursor, name };
 				memcpy(Buffer + Cursor, &data, sizeof(float));
 				Cursor += sizeof(float);
 			}
+			else if constexpr (std::is_same_v<T, glm::vec3>) {
+				Uniforms[UniformIndex++] = { UniformType::Float3, (uint32_t)Cursor, name };
+				memcpy(Buffer + Cursor, glm::value_ptr(data), sizeof(glm::vec3));
+				Cursor += sizeof(glm::vec3);
+			}
 			else if constexpr (std::is_same_v<T, glm::vec4>) {
-				Uniforms[UniformIndex] = { UniformType::Float4, (uint32_t)Cursor, name };
+				Uniforms[UniformIndex++] = { UniformType::Float4, (uint32_t)Cursor, name };
 				memcpy(Buffer + Cursor, glm::value_ptr(data), sizeof(glm::vec4));
 				Cursor += sizeof(glm::vec4);
 			}
-
-			UniformIndex++;
+			else if constexpr (std::is_same_v<T, glm::mat4>) {
+				Uniforms[UniformIndex++] = { UniformType::Matrix4x4, (uint32_t)Cursor, name };
+				memcpy(Buffer + Cursor, glm::value_ptr(data), sizeof(glm::mat4));
+				Cursor += sizeof(glm::mat4);
+			}
 		}
 
 	};
@@ -88,10 +96,24 @@ namespace Hazel {
 	class Shader 
 	{
 	public:
+		virtual void Reload() = 0;
+
 		virtual void Bind() = 0;
 		virtual void UploadUniformBuffer(const UniformBufferBase& uniformBuffer) = 0;
 
+		// Temporary while we don't have materials
+		virtual void SetFloat(const std::string& name, float value) = 0;
+		virtual void SetMat4(const std::string& name, const glm::mat4& value) = 0;
+
+		// Represents a complete shader program stored in a single file.
+		// Note: currently for simplicity this is simply a string filepath, however
+		//       in the future this will be an asset object + metadata
+		virtual const std::string& GetName() const = 0;
+
 		static Shader* Create(const std::string& filepath);
+
+		// Temporary, before we have an asset manager
+		static std::vector<Shader*> s_AllShaders;
 	};
   
 }

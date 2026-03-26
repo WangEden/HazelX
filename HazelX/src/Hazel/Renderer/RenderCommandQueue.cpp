@@ -5,8 +5,6 @@
 ////////////////////// Copy from HazelSource //////////////////////
 #define HZ_RENDER_TRACE(...) HZ_CORE_TRACE(__VA_ARGS__)
 
-using byte = unsigned char;
-
 namespace Hazel {
 
 	RenderCommandQueue::RenderCommandQueue()
@@ -39,7 +37,7 @@ namespace Hazel {
 
 	void RenderCommandQueue::Execute()
 	{
-		HZ_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
+		//HZ_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
 
 		byte* buffer = m_CommandBuffer;
 

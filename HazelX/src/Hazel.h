@@ -19,12 +19,12 @@
 
 // ---------- Renderer ------------
 #include "Hazel/Renderer/Renderer.h"
-#include "Hazel/Renderer/FrameBuffer.h"
+#include "Hazel/Renderer/Framebuffer.h"
 #include "Hazel/Renderer/Buffer.h"
 #include "Hazel/Renderer/Texture.h"
 #include "Hazel/Renderer/Shader.h"
-//#include "Hazel/Renderer/OrthographicCamera.h"
-//#include "Hazel/Renderer/VertexArray.h"
+#include "Hazel/Renderer/Mesh.h"
+#include "Hazel/Renderer/Camera.h"
 // --------------------------------
 
 // ------ Entry Point 入口点 ------

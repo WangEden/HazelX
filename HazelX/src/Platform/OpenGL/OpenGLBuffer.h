@@ -13,10 +13,10 @@ namespace Hazel {
         virtual void Bind() const;
         //virtual void Unbind() const;
 
-        virtual const BufferLayout& GetLayout() const override { return m_Layout; }
-        virtual void SetLayout(const BufferLayout& layout) override {
-            m_Layout = layout;
-        }
+        //virtual const BufferLayout& GetLayout() const override { return m_Layout; }
+        //virtual void SetLayout(const BufferLayout& layout) override {
+        //    m_Layout = layout;
+        //}
 
         ///////////////////////////////////////////////////////////////////
         ////////////////////// Copy from HazelSource //////////////////////
@@ -29,7 +29,7 @@ namespace Hazel {
 
     private:
         RendererID m_RendererID;
-        BufferLayout m_Layout;
+        //BufferLayout m_Layout;
         unsigned int m_Size;
     };
 
@@ -42,19 +42,17 @@ namespace Hazel {
         virtual void Bind() const;
         //virtual void Unbind() const;
 
-        virtual uint32_t GetCount() const { return m_Count; }
-
         ///////////////////////////////////////////////////////////////////
         //////////////////////// Copy from HazelSource ////////////////////
         OpenGLIndexBuffer(unsigned int size);
         virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0);
+        virtual uint32_t GetCount() const { return m_Size / sizeof(uint32_t); }
         virtual unsigned int GetSize() const { return m_Size; }
         virtual RendererID GetRendererID() const { return m_RendererID; }
         ////////////////////// Copy from HazelSource //////////////////////
         ///////////////////////////////////////////////////////////////////
     private:
         RendererID m_RendererID;
-        uint32_t m_Count;
         unsigned int m_Size;
     };
 

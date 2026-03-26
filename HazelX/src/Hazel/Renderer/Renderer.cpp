@@ -3,8 +3,6 @@
 
 namespace Hazel {
 
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
-
 	///////////////////////////////////////////////////////////////////
 	////////////////////// Copy from HazelSource //////////////////////
 	Renderer* Renderer::s_Instance = new Renderer();
@@ -17,13 +15,16 @@ namespace Hazel {
 
 	void Renderer::Clear()
 	{
+		HZ_RENDER({
+			RendererAPI::Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		});
 	}
 
 	void Renderer::Clear(float r, float g, float b, float a)
 	{
 		HZ_RENDER_4(r, g, b, a, {
 			RendererAPI::Clear(r, g, b, a);
-			});
+		});
 	}
 
 	void Renderer::ClearMagenta()
@@ -35,11 +36,11 @@ namespace Hazel {
 	{
 	}
 
-	void Renderer::DrawIndexed(unsigned int count)
+	void Renderer::DrawIndexed(unsigned int count, bool depthTest)
 	{
-		HZ_RENDER_1(count, {
-			RendererAPI::DrawIndexed(count);
-			});
+		HZ_RENDER_2(count, depthTest, {
+			RendererAPI::DrawIndexed(count, depthTest);
+		});
 	}
 
 	void Renderer::WaitAndRender()
@@ -49,22 +50,4 @@ namespace Hazel {
 	////////////////////// Copy from HazelSource //////////////////////
 	///////////////////////////////////////////////////////////////////
 
-	//void Renderer::BeginScene(OrthographicCamera& camera)
-	//{
-	//	m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
-	//}
-
-	//void Renderer::EndScene()
-	//{
-	//}
-
-	//void Renderer::Submit(const std::shared_ptr<Shader> shader, const std::shared_ptr<VertexArray>& vertexArray)
-	//{
-	//	shader->Bind();
-	//	shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-
-	//	vertexArray->Bind();
-	//	RenderCommand::DrawIndexed(vertexArray);
-	//}
-	 
 }

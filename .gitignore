@@ -15,4 +15,4 @@ HazelX/vendor/*/*/
 *.user
 
 # Sandbox
-Sandbox/imgui.ini
+**/imgui.ini

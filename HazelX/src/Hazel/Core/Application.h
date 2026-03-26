@@ -34,6 +34,8 @@ namespace Hazel {
 		void PushOverlay(Layer* layer);
 		void RenderImGui();
 
+		std::string OpenFile(const std::string& filter) const;
+
 		inline Window& GetWindow() { return *m_Window; }
 		
 		inline static Application& Get() { return *s_Instance; }
@@ -42,7 +44,7 @@ namespace Hazel {
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
-		bool m_Running = true;
+		bool m_Running = true, m_Minimized = false;
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
 

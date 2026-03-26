@@ -6,12 +6,27 @@
 
 namespace Hazel {
 
-	using RendererID = unsigned int;
+	using RendererID = uint32_t;
 
 	enum class RendererAPIType
 	{
-		None = 0, OpenGL = 1,
+		None = 0,
+		OpenGL,
 	};
+
+	///////////////////////////////////////////////////////////////////
+	////////////////////// Copy from HazelSource //////////////////////
+	struct RenderAPICapabilities
+	{
+		std::string Vendor;
+		std::string Renderer;
+		std::string Version;
+
+		int MaxSamples;
+		float MaxAnisotropy;
+	};
+	////////////////////// Copy from HazelSource //////////////////////
+	///////////////////////////////////////////////////////////////////
 
 	class RendererAPI
 	{
@@ -20,19 +35,22 @@ namespace Hazel {
 		////////////////////// Copy from HazelSource //////////////////////
 		static void Init();
 		static void Shutdown();
+
 		static void Clear(float r, float g, float b, float a);
 		static void SetClearColor(float r, float g, float b, float a);
-		static void DrawIndexed(unsigned int count);
+
+		static void DrawIndexed(unsigned int count, bool depthTest = true);
+
+		static RenderAPICapabilities& GetCapabilities()
+		{
+			static RenderAPICapabilities capabilities;
+			return capabilities;
+		}
 		////////////////////// Copy from HazelSource //////////////////////
 		///////////////////////////////////////////////////////////////////
 
-		//virtual void SetClearColor(const glm::vec4& color) = 0;
-		//virtual void Clear() = 0;
-		//virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) = 0;
-
 		inline static RendererAPIType Current() { return s_CurrentRendererAPI; }
 	private:
-		//static API s_API;
 		static RendererAPIType s_CurrentRendererAPI;
 	};
 }

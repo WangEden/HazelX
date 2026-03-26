@@ -14,5 +14,7 @@ namespace Hazel {
 		virtual std::pair<float, float> GetMousePositionImpl() override;
 		virtual float GetMouseXImpl() override;
 		virtual float GetMouseYImpl() override;
+
+		//virtual float GetMouseScrollYImpl() override;
 	};
 }
