@@ -84,6 +84,9 @@ namespace Hazel {
 				HZ_RENDER_1(app, { app->RenderImGui(); });
 
 				Renderer::Get().WaitAndRender();
+				// 渲染解耦，此处只负责渲染，提交渲染命令由HZ_RENDER宏完成，
+				// HZ_RENDER宏会调用Renderer::Submit()将渲染命令提交到Renderer的命令队列中，
+				// 然后Renderer::WaitAndRender()会依次执行队列中的渲染命令；
 			}
 			m_Window->OnUpdate();
 		}

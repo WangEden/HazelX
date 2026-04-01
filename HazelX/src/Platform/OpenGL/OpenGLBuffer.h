@@ -7,50 +7,32 @@ namespace Hazel {
     class OpenGLVertexBuffer : public VertexBuffer
     {
     public:
-        //OpenGLVertexBuffer(float* vertices, uint32_t size);
+        OpenGLVertexBuffer(unsigned int size);
         virtual ~OpenGLVertexBuffer();
 
         virtual void Bind() const;
-        //virtual void Unbind() const;
-
-        //virtual const BufferLayout& GetLayout() const override { return m_Layout; }
-        //virtual void SetLayout(const BufferLayout& layout) override {
-        //    m_Layout = layout;
-        //}
-
-        ///////////////////////////////////////////////////////////////////
-        ////////////////////// Copy from HazelSource //////////////////////
-        OpenGLVertexBuffer(unsigned int size);
         virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0);
+
         virtual unsigned int GetSize() const { return m_Size; }
         virtual RendererID GetRendererID() const { return m_RendererID; }
-        ////////////////////// Copy from HazelSource //////////////////////
-        ///////////////////////////////////////////////////////////////////
 
     private:
         RendererID m_RendererID;
-        //BufferLayout m_Layout;
         unsigned int m_Size;
     };
 
     class OpenGLIndexBuffer : public IndexBuffer
     {
     public:
-        //OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+        OpenGLIndexBuffer(unsigned int size);
         virtual ~OpenGLIndexBuffer();
 
         virtual void Bind() const;
-        //virtual void Unbind() const;
-
-        ///////////////////////////////////////////////////////////////////
-        //////////////////////// Copy from HazelSource ////////////////////
-        OpenGLIndexBuffer(unsigned int size);
         virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0);
+
         virtual uint32_t GetCount() const { return m_Size / sizeof(uint32_t); }
         virtual unsigned int GetSize() const { return m_Size; }
         virtual RendererID GetRendererID() const { return m_RendererID; }
-        ////////////////////// Copy from HazelSource //////////////////////
-        ///////////////////////////////////////////////////////////////////
     private:
         RendererID m_RendererID;
         unsigned int m_Size;

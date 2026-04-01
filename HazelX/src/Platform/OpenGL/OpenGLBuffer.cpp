@@ -7,8 +7,6 @@ namespace Hazel {
 
 	// ==================================== Vertex Buffer ============================
 
-	///////////////////////////////////////////////////////////////////
-	////////////////////// Copy from HazelSource //////////////////////
 	OpenGLVertexBuffer::OpenGLVertexBuffer(unsigned int size)
 		: m_RendererID(0), m_Size(size)
 	{
@@ -49,13 +47,9 @@ namespace Hazel {
 			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (const void*)(3 * sizeof(float)));
 		});
 	}
-	////////////////////// Copy from HazelSource //////////////////////
-	///////////////////////////////////////////////////////////////////
 
 	// ==================================== Index Buffer ============================
 
-	///////////////////////////////////////////////////////////////////
-	////////////////////// Copy from HazelSource //////////////////////
 	OpenGLIndexBuffer::OpenGLIndexBuffer(unsigned int size)
 		: m_RendererID(0), m_Size(size)
 	{
@@ -86,7 +80,5 @@ namespace Hazel {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self->m_RendererID);
 		});
 	}
-	////////////////////// Copy from HazelSource //////////////////////
-	///////////////////////////////////////////////////////////////////
 
 }

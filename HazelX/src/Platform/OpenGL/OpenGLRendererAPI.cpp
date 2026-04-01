@@ -5,8 +5,6 @@
 
 namespace Hazel {
 
-	///////////////////////////////////////////////////////////////////
-	////////////////////// Copy from HazelSource //////////////////////
 	static void OpenGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 	{
 		if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
@@ -15,20 +13,22 @@ namespace Hazel {
 
 	void RendererAPI::Init()
 	{
-		glDebugMessageCallback(OpenGLLogMessage, nullptr);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(OpenGLLogMessage, nullptr); // 注册一个回调函数来接收OpenGL的调试消息
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // 开启SYNCHRONOUS 确保错误发生时立即调用回调函数
 
-		unsigned int vao;
-		glGenVertexArrays(1, &vao);
+		// TODO：
+		// 当前只是一个单网格的渲染场景Demo，后续需要改成一个网格对应一个VAO的模式
+		unsigned int vao; // 核心配置文件下，需要手动创建并绑定一个顶点数组对象（VAO），否则OpenGL会拒绝渲染任何东西
+		glGenVertexArrays(1, &vao); 
 		glBindVertexArray(vao);
 
-		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST); // 开启深度测试
 		//glEnable(GL_CULL_FACE);
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-		glFrontFace(GL_CCW);
+		glFrontFace(GL_CCW); // 规定逆时针排列的顶点为正面
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND); // 开启混合
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // 标准的alpha混合函数，用于处理透明或半透明对象
 
 		auto& caps = RendererAPI::GetCapabilities();
 
@@ -36,8 +36,8 @@ namespace Hazel {
 		caps.Renderer = (const char*)glGetString(GL_RENDERER);
 		caps.Version = (const char*)glGetString(GL_VERSION);
 
-		glGetIntegerv(GL_MAX_SAMPLES, &caps.MaxSamples);
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &caps.MaxAnisotropy);
+		glGetIntegerv(GL_MAX_SAMPLES, &caps.MaxSamples); // 获取最大多重采样数
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &caps.MaxAnisotropy); // 获取最大各向异性过滤级别
 	}
 
 	void RendererAPI::Shutdown()
@@ -64,23 +64,5 @@ namespace Hazel {
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
-	////////////////////// Copy from HazelSource //////////////////////
-	///////////////////////////////////////////////////////////////////
-
-	//void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
-	//{
-	//	glClearColor(color.r, color.g, color.b, color.a);
-	//}
-
-	//void OpenGLRendererAPI::Clear()
-	//{
-	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//}
-
-	//void OpenGLRendererAPI::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
-	//{
-	//	vertexArray->Bind();
-	//	glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffers()->GetCount(), GL_UNSIGNED_INT, nullptr);
-	//}
 
 }

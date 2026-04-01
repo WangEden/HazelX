@@ -35,7 +35,6 @@ namespace Hazel {
 
 	class HAZEL_API Event
 	{
-		//friend class EventDispatcher;
 	public:
 		bool Handled = false;
 
@@ -48,10 +47,6 @@ namespace Hazel {
 		{
 			return GetCategoryFlags() & category;
 		}
-
-	//protected:
-		//bool m_Handled = false; // 规定事件是否想被继续传播，这样下面的层就不会再重复处理事件
-		// 事件会在层之间传播
 	};
 
 	class EventDispatcher

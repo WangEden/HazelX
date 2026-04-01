@@ -9,8 +9,6 @@ namespace Hazel {
 	public:
 		virtual ~VertexBuffer() {}
 
-		///////////////////////////////////////////////////////////////////
-		////////////////////// Copy from HazelSource //////////////////////
 		virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0) = 0;
 		virtual void Bind() const = 0;
 
@@ -18,8 +16,6 @@ namespace Hazel {
 		virtual RendererID GetRendererID() const = 0;
 
 		static VertexBuffer* Create(unsigned int size = 0);
-		////////////////////// Copy from HazelSource //////////////////////
-		///////////////////////////////////////////////////////////////////
 	};
 
 	class IndexBuffer
@@ -27,8 +23,6 @@ namespace Hazel {
 	public:
 		virtual ~IndexBuffer() {}
 
-		///////////////////////////////////////////////////////////////////
-		////////////////////// Copy from HazelSource //////////////////////
 		virtual void SetData(void* buffer, unsigned int size, unsigned int offset = 0) = 0;
 		virtual void Bind() const = 0;
 
@@ -38,7 +32,5 @@ namespace Hazel {
 		virtual RendererID GetRendererID() const = 0;
 
 		static IndexBuffer* Create(unsigned int size = 0);
-		////////////////////// Copy from HazelSource //////////////////////
-		///////////////////////////////////////////////////////////////////
 	};
 }
