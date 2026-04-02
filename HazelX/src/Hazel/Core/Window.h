@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "hzpch.h"
+#include <functional>
 
 #include "Hazel/Core/Base.h"
 #include "Hazel/Core/Events/Event.h"
@@ -14,8 +14,8 @@ namespace Hazel {
 		unsigned int Height;
 
 		WindowProps(const std::string& title = "Hazel Engine",
-					unsigned int width = 1920,
-					unsigned int height = 1080)
+					unsigned int width = 1280,
+					unsigned int height = 720)
 			: Title(title), Width(width), Height(height)
 		{
 		}
@@ -32,6 +32,7 @@ namespace Hazel {
 
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
+		virtual std::pair<float, float> GetWindowPos() const = 0;
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;

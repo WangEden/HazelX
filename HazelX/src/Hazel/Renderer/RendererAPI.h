@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include <glm/glm.hpp>
-
-//#include "VertexArray.h"
 
 namespace Hazel {
 
@@ -42,6 +39,8 @@ namespace Hazel {
 		}
 
 		inline static RendererAPIType Current() { return s_CurrentRendererAPI; }
+	private:
+		static void LoadRequiredAssest();
 	private:
 		static RendererAPIType s_CurrentRendererAPI;
 	};

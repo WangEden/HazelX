@@ -28,9 +28,6 @@ namespace Hazel {
 		HZ_RENDER_S3(buffer, size, offset, {
 			glBindBuffer(GL_ARRAY_BUFFER, self->m_RendererID);
 			glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
-
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 		});
 	}
 

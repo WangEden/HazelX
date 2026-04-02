@@ -5,6 +5,8 @@
 
 namespace Hazel {
 
+	class ShaderLibrary;
+
 	class Renderer
 	{
 	public:
@@ -20,6 +22,8 @@ namespace Hazel {
 
 		static void Init();
 
+		static const Scope<ShaderLibrary>& GetShaderLibrary() { return Get().m_ShaderLibrary; }
+
 		static void* Submit(RenderCommandFn fn, unsigned int size)
 		{
 			return s_Instance->m_CommandQueue.Allocate(fn, size);
@@ -32,6 +36,7 @@ namespace Hazel {
 		static Renderer* s_Instance;
 
 		RenderCommandQueue m_CommandQueue; // 渲染命令队列之所以不使用静态类，是因为其生命周期需要被渲染器管理，而不应该由整个应用程序管理
+		Scope<ShaderLibrary> m_ShaderLibrary;
 	};
 }
 

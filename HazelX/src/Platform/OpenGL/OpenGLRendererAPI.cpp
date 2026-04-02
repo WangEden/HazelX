@@ -8,12 +8,19 @@ namespace Hazel {
 	static void OpenGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 	{
 		if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
+		{
 			HZ_CORE_ERROR("{0}", message);
+			HZ_CORE_ASSERT(false, "");
+		}
+		else
+		{
+		}
 	}
 
 	void RendererAPI::Init()
 	{
 		glDebugMessageCallback(OpenGLLogMessage, nullptr); // 注册一个回调函数来接收OpenGL的调试消息
+		glEnable(GL_DEBUG_OUTPUT); // 开启调试输出
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // 开启SYNCHRONOUS 确保错误发生时立即调用回调函数
 
 		// TODO：
@@ -38,9 +45,22 @@ namespace Hazel {
 
 		glGetIntegerv(GL_MAX_SAMPLES, &caps.MaxSamples); // 获取最大多重采样数
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &caps.MaxAnisotropy); // 获取最大各向异性过滤级别
+
+		GLenum error = glGetError();
+		while (error != GL_NO_ERROR)
+		{
+			HZ_CORE_ERROR("OpenGL Error: {0}", error);
+			error = glGetError();
+		}
+
+		LoadRequiredAssest();
 	}
 
 	void RendererAPI::Shutdown()
+	{
+	}
+
+	void RendererAPI::LoadRequiredAssest()
 	{
 	}
 
@@ -57,12 +77,13 @@ namespace Hazel {
 
 	void RendererAPI::DrawIndexed(unsigned int count, bool depthTest)
 	{
-		if (depthTest)
-			glEnable(GL_DEPTH_TEST);
-		else
+		if (!depthTest)
 			glDisable(GL_DEPTH_TEST);
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		if (!depthTest)
+			glEnable(GL_DEPTH_TEST);
 	}
 
 }

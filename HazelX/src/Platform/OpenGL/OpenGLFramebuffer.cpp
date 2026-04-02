@@ -1,14 +1,15 @@
 ﻿#include "hzpch.h"
 #include "OpenGLFramebuffer.h"
 
-///////////////////////////////////////////////////////////////////
-////////////////////// Copy from HazelSource //////////////////////
-
 #include "Hazel/Renderer/Renderer.h"
 #include <glad/glad.h>
 
 namespace Hazel {
-
+	// 帧缓冲区对象 FBO
+	// 之前没有直接指定帧缓冲区的时候，默认会渲染到一个默认的帧缓冲区上，
+	// 这个默认的帧缓冲区由窗口系统创建，通常与窗口的大小相同。
+	// 这个默认的帧缓冲区和显示器直接相关，渲染到这个帧缓冲区上的内容会直接显示在屏幕上。
+	// 当我们需要进行离屏渲染或者后期处理时，我们就需要创建一个自定义的帧缓冲区对象 FBO。
 
 	OpenGLFramebuffer::OpenGLFramebuffer(uint32_t width, uint32_t height, FramebufferFormat format)
 		: m_Width(width), m_Height(height), m_Format(format)
@@ -20,7 +21,7 @@ namespace Hazel {
 	{
 		HZ_RENDER_S({
 			glDeleteFramebuffers(1, &self->m_RendererID);
-			});
+		});
 	}
 
 	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
@@ -70,7 +71,7 @@ namespace Hazel {
 				HZ_CORE_ERROR("Framebuffer is incomplete!");
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			});
+		});
 	}
 
 	void OpenGLFramebuffer::Bind() const
@@ -78,14 +79,14 @@ namespace Hazel {
 		HZ_RENDER_S({
 			glBindFramebuffer(GL_FRAMEBUFFER, self->m_RendererID);
 			glViewport(0, 0, self->m_Width, self->m_Height);
-			});
+		});
 	}
 
 	void OpenGLFramebuffer::Unbind() const
 	{
 		HZ_RENDER_S({
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			});
+		});
 	}
 
 	void OpenGLFramebuffer::BindTexture(uint32_t slot) const
@@ -93,9 +94,6 @@ namespace Hazel {
 		HZ_RENDER_S1(slot, {
 			glActiveTexture(GL_TEXTURE0 + slot);
 			glBindTexture(GL_TEXTURE_2D, self->m_ColorAttachment);
-			});
+		});
 	}
 }
-
-////////////////////// Copy from HazelSource //////////////////////
-///////////////////////////////////////////////////////////////////

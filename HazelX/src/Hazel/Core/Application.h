@@ -1,18 +1,13 @@
 ﻿#pragma once
 
 #include "Hazel/Core/Base.h"
-
-#include "Window.h"
+#include "Hazel/Core/TimeStep.h"
+#include "Hazel/Core/Window.h"
 #include "LayerStack.h"
-#include "Events/Event.h"
+
 #include "Hazel/Core/Events/ApplicationEvent.h"
 
 #include "Hazel/ImGui/ImGuiLayer.h"
-
-#include "Hazel/Renderer/Shader.h"
-#include "Hazel/Renderer/Buffer.h"
-#include "Hazel/Renderer/VertexArray.h"
-#include "Hazel/Renderer/OrthographicCamera.h"
 
 namespace Hazel {
 
@@ -26,9 +21,9 @@ namespace Hazel {
 
 		virtual void OnInit() {}
 		virtual void OnShutdown() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(TimeStep ts) {}
 
-		void OnEvent(Event& e);
+		virtual void OnEvent(Event& event);
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
@@ -39,6 +34,8 @@ namespace Hazel {
 		inline Window& GetWindow() { return *m_Window; }
 		
 		inline static Application& Get() { return *s_Instance; }
+
+		float GetTime() const; // TODO: This should be in "Platform"
 	private:
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnWindowClose(WindowCloseEvent& e);
@@ -47,6 +44,9 @@ namespace Hazel {
 		bool m_Running = true, m_Minimized = false;
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
+		TimeStep m_TimeStep;
+
+		float m_LastFrameTime = 0.0f;
 
 		static Application* s_Instance;
 	};

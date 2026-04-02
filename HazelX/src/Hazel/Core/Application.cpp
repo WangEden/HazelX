@@ -1,8 +1,6 @@
 ﻿#include "hzpch.h"
 #include "Application.h"
 
-#include "Hazel/Core/Log.h"
-
 #include "Hazel/Renderer/Renderer.h"
 #include "Hazel/Renderer/Framebuffer.h"
 #include <GLFW/glfw3.h>
@@ -29,11 +27,13 @@ namespace Hazel {
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent)); // 将事件回调函数绑定到窗口事件系统中，这样当窗口事件发生时就会调用Application的OnEvent方法
+		m_Window->SetVSync(false);
 
 		m_ImGuiLayer = new ImGuiLayer("ImGui");
 		PushOverlay(m_ImGuiLayer);
 
 		Renderer::Init();
+		Renderer::Get().WaitAndRender();
 	}
 
 	Application::~Application()
@@ -61,6 +61,7 @@ namespace Hazel {
 		ImGui::Text("Vendor: %s", caps.Vendor.c_str());
 		ImGui::Text("Renderer: %s", caps.Renderer.c_str());
 		ImGui::Text("Version: %s", caps.Version.c_str());
+		ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
 		ImGui::End();
 
 		for (Layer* layer : m_LayerStack)
@@ -77,7 +78,7 @@ namespace Hazel {
 			if (!m_Minimized)
 			{
 				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(); // 提交要渲染的层
+					layer->OnUpdate(m_TimeStep); // 提交要渲染的层
 
 				// Render ImGui on render thread
 				Application* app = this;
@@ -89,6 +90,10 @@ namespace Hazel {
 				// 然后Renderer::WaitAndRender()会依次执行队列中的渲染命令；
 			}
 			m_Window->OnUpdate();
+
+			float time = GetTime();
+			m_TimeStep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 		}
 		OnShutdown();
 	}
@@ -154,4 +159,8 @@ namespace Hazel {
 		return std::string();
 	}
 
+	float Application::GetTime() const
+	{
+		return (float)glfwGetTime();
+	}
 }

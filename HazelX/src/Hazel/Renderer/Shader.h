@@ -1,7 +1,10 @@
 ﻿#pragma once
 
 #include "Hazel/Core/Base.h"
+#include "Hazel/Core/Buffer.h"
+
 #include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/ShaderUniform.h"
 
 #include <string>
 #include <glm/glm.hpp>
@@ -96,6 +99,8 @@ namespace Hazel {
 	class Shader 
 	{
 	public:
+		using ShaderReloadedCallback = std::function<void()>;
+
 		virtual void Reload() = 0;
 
 		virtual void Bind() = 0;
@@ -104,16 +109,44 @@ namespace Hazel {
 		// Temporary while we don't have materials
 		virtual void SetFloat(const std::string& name, float value) = 0;
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) = 0;
+		virtual void SetMat4FromRenderThread(const std::string& name, const glm::mat4& value) = 0;
+
+		virtual const std::string& GetName() const = 0;
 
 		// Represents a complete shader program stored in a single file.
 		// Note: currently for simplicity this is simply a string filepath, however
 		//       in the future this will be an asset object + metadata
-		virtual const std::string& GetName() const = 0;
+		static Ref<Shader> Create(const std::string& filepath);
 
-		static Shader* Create(const std::string& filepath);
+		virtual void SetVSMaterialUniformBuffer(Buffer buffer) = 0;
+		virtual void SetPSMaterialUniformBuffer(Buffer buffer) = 0;
+
+		virtual const ShaderUniformBufferList& GetVSRendererUniforms() const = 0;
+		virtual const ShaderUniformBufferList& GetPSRendererUniforms() const = 0;
+		virtual const ShaderUniformBufferDeclaration& GetVSMaterialUniformBuffer() const = 0;
+		virtual const ShaderUniformBufferDeclaration& GetPSMaterialUniformBuffer() const = 0;
+
+		virtual const ShaderResourceList& GetResources() const = 0;
+
+		virtual void AddShaderReloadedCallback(const ShaderReloadedCallback& callback) = 0;
 
 		// Temporary, before we have an asset manager
-		static std::vector<Shader*> s_AllShaders;
+		static std::vector<Ref<Shader>> s_AllShaders;
 	};
-  
+
+	class ShaderLibrary
+	{
+	public:
+		ShaderLibrary();
+		~ShaderLibrary();
+
+		void Add(const Ref<Shader>& shader);
+		void Load(const std::string& path);
+		void Load(const std::string& name, const std::string& path);
+
+		Ref<Shader>& Get(const std::string& name);
+	private:
+		std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+	};
+ 
 }

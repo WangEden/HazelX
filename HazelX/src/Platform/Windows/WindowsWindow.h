@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Hazel/Core/Window.h"
-#include "Hazel/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -18,6 +17,8 @@ namespace Hazel {
 		inline unsigned int GetWidth() const override { return m_Data.Width; }
 		inline unsigned int GetHeight() const override { return m_Data.Height; }
 
+		virtual std::pair<float, float> GetWindowPos() const override;
+
 		inline void SetEventCallback(const EventCallbackFn& callback) override 
 		{
 			m_Data.EventCallback = callback;
@@ -31,7 +32,7 @@ namespace Hazel {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
-		GraphicsContext* m_Context;
+		GLFWcursor* m_ImGuiMouseCursors[9] = { 0 };
 
 		struct WindowData
 		{
@@ -43,6 +44,7 @@ namespace Hazel {
 		};
 
 		WindowData m_Data;
+		float m_LastFrameTime = 0.0f;
 	};
 
 }
