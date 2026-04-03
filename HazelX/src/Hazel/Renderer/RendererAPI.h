@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-
 namespace Hazel {
 
 	using RendererID = uint32_t;

@@ -22,13 +22,10 @@
 #include "Hazel/Renderer/Renderer.h"
 #include "Hazel/Renderer/Framebuffer.h"
 #include "Hazel/Renderer/Buffer.h"
+#include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/Renderer/Texture.h"
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/Mesh.h"
 #include "Hazel/Renderer/Camera.h"
 #include "Hazel/Renderer/Material.h"
-// --------------------------------
-
-// ------ Entry Point 入口点 ------
-#include "Hazel/EntryPoint.h"
 // --------------------------------

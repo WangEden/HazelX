@@ -14,14 +14,14 @@ namespace Hazel {
 		unsigned int Height;
 
 		WindowProps(const std::string& title = "Hazel Engine",
-					unsigned int width = 1280,
-					unsigned int height = 720)
+					unsigned int width = 1920,
+					unsigned int height = 1080)
 			: Title(title), Width(width), Height(height)
 		{
 		}
 	};
 
-	class HAZEL_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>; // 事件回调函数

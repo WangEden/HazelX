@@ -11,10 +11,16 @@
 
 namespace Hazel {
 
-	class HAZEL_API Application
+	struct ApplicationProps
+	{
+		std::string Name;
+		uint32_t WindowWidth, WindowHeight;
+	};
+
+	class Application
 	{
 	public:
-		Application();
+		Application(const ApplicationProps& props = { "Hazel Engine", 1920, 1080 });
 		virtual ~Application();
 		
 		void Run();

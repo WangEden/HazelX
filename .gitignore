@@ -21,6 +21,9 @@ HazelX/vendor/*/*/
 
 # Visual Studio
 *.user
+*.sln
+*.vcxproj*
 
 # Sandbox
 **/imgui.ini
+

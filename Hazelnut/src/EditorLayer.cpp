@@ -1,79 +1,115 @@
-﻿#include <Hazel.h>
+﻿#include "EditorLayer.h"
 
-#include "Hazel/ImGui/ImGuiLayer.h"
-#include "imgui/imgui_internal.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-
-#include <string>
+#include "Hazel/ImGui/ImGuizmo.h"
 
 #define ImGuiDockNodeFlags_PassthruDockspace ImGuiDockNodeFlags_PassthruCentralNode
 
-static void ImGuiShowHelpMarker(const char* desc)
-{
-	ImGui::TextDisabled("(?)");
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::TextUnformatted(desc);
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
-	}
-}
+// Copy from HazelSource
 
-class EditorLayer : public Hazel::Layer
-{
-public:
-	EditorLayer()
-		: m_Scene(Scene::Spheres),
-		m_Camera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
+namespace Hazel {
+
+	static void ImGuiShowHelpMarker(const char* desc)
 	{
+		ImGui::TextDisabled("(?)");
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
 	}
 
-	virtual ~EditorLayer()
+	EditorLayer::EditorLayer()
+		: m_Scene(Scene::Model), m_Camera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
 	{
 	}
 
-	virtual void OnAttach() override
+	EditorLayer::~EditorLayer()
 	{
+	}
+
+	void EditorLayer::OnAttach()
+	{
+		// ImGui Colors
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+		colors[ImGuiCol_WindowBg] = ImVec4(0.18f, 0.18f, 0.18f, 1.0f); // Window background
+		colors[ImGuiCol_ChildBg] = ImVec4(1.0f, 1.0f, 1.0f, 0.0f);
+		colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+		colors[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.5f);
+		colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+		colors[ImGuiCol_FrameBg] = ImVec4(0.3f, 0.3f, 0.3f, 0.5f); // Widget backgrounds
+		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.4f, 0.4f, 0.4f, 0.4f);
+		colors[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, 0.6f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.04f, 0.04f, 0.04f, 1.0f);
+		colors[ImGuiCol_TitleBgActive] = ImVec4(0.29f, 0.29f, 0.29f, 1.0f);
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 0.51f);
+		colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.0f);
+		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+		colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
+		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.0f);
+		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
+		colors[ImGuiCol_CheckMark] = ImVec4(0.94f, 0.94f, 0.94f, 1.0f);
+		colors[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 0.7f);
+		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+		colors[ImGuiCol_Button] = ImVec4(0.44f, 0.44f, 0.44f, 0.4f);
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.46f, 0.47f, 0.48f, 1.0f);
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.42f, 0.42f, 0.42f, 1.0f);
+		colors[ImGuiCol_Header] = ImVec4(0.7f, 0.7f, 0.7f, 0.31f);
+		colors[ImGuiCol_HeaderHovered] = ImVec4(0.7f, 0.7f, 0.7f, 0.8f);
+		colors[ImGuiCol_HeaderActive] = ImVec4(0.48f, 0.5f, 0.52f, 1.0f);
+		colors[ImGuiCol_Separator] = ImVec4(0.43f, 0.43f, 0.5f, 0.5f);
+		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.72f, 0.72f, 0.72f, 0.78f);
+		colors[ImGuiCol_SeparatorActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
+		colors[ImGuiCol_ResizeGrip] = ImVec4(0.91f, 0.91f, 0.91f, 0.25f);
+		colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.81f, 0.81f, 0.81f, 0.67f);
+		colors[ImGuiCol_ResizeGripActive] = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
+		colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.0f);
+		colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.0f, 0.43f, 0.35f, 1.0f);
+		colors[ImGuiCol_PlotHistogram] = ImVec4(0.73f, 0.6f, 0.15f, 1.0f);
+		colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.0f, 0.6f, 0.0f, 1.0f);
+		colors[ImGuiCol_TextSelectedBg] = ImVec4(0.87f, 0.87f, 0.87f, 0.35f);
+		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.8f, 0.8f, 0.8f, 0.35f);
+		colors[ImGuiCol_DragDropTarget] = ImVec4(1.0f, 1.0f, 0.0f, 0.9f);
+		colors[ImGuiCol_NavHighlight] = ImVec4(0.60f, 0.6f, 0.6f, 1.0f);
+		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+
 		using namespace glm;
 
-		m_Mesh.reset(new Hazel::Mesh("assets/models/m1911/m1911.fbx"));
-		m_MeshMaterial.reset(new Hazel::MaterialInstance(m_Mesh->GetMaterial()));
+		m_Mesh.reset(new Mesh("assets/models/m1911/m1911.fbx"));
+		m_MeshMaterial.reset(new MaterialInstance(m_Mesh->GetMaterial()));
 
-		m_QuadShader = Hazel::Shader::Create("assets/shaders/quad.glsl");
-		m_HDRShader = Hazel::Shader::Create("assets/shaders/hdr.glsl");
+		m_QuadShader = Shader::Create("assets/shaders/quad.glsl");
+		m_HDRShader = Shader::Create("assets/shaders/hdr.glsl");
 
-		m_SphereMesh.reset(new Hazel::Mesh("assets/models/Sphere1m.fbx"));
-		m_PlaneMesh.reset(new Hazel::Mesh("assets/models/Plane1m.obj"));
+		m_SphereMesh.reset(new Mesh("assets/models/Sphere1m.fbx"));
+		m_PlaneMesh.reset(new Mesh("assets/models/Plane1m.obj"));
 
-		m_GridShader = Hazel::Shader::Create("assets/shaders/Grid.glsl");
-		m_GridMaterial = Hazel::MaterialInstance::Create(Hazel::Material::Create(m_GridShader));
+		m_GridShader = Shader::Create("assets/shaders/Grid.glsl");
+		m_GridMaterial = MaterialInstance::Create(Material::Create(m_GridShader));
 		m_GridMaterial->Set("u_Scale", m_GridScale);
 		m_GridMaterial->Set("u_Res", m_GridSize);
 
 		// Editor
-		m_CheckerboardTex.reset(Hazel::Texture2D::Create("assets/editor/Checkerboard.tga"));
+		m_CheckerboardTex.reset(Texture2D::Create("assets/editor/Checkerboard.tga"));
 
 		// Environment
-		m_EnvironmentCubeMap.reset(Hazel::TextureCube::Create("assets/textures/environments/Arches_E_PineTree_Radiance.tga"));
-		//m_EnvironmentCubeMap.reset(Hazel::TextureCube::Create("assets/textures/environments/DebugCubeMap.tga"));
-		m_EnvironmentIrradiance.reset(Hazel::TextureCube::Create("assets/textures/environments/Arches_E_PineTree_Irradiance.tga"));
-		m_BRDFLUT.reset(Hazel::Texture2D::Create("assets/textures/BRDF_LUT.tga"));
+		m_EnvironmentCubeMap.reset(TextureCube::Create("assets/textures/environments/Arches_E_PineTree_Radiance.tga"));
+		//m_EnvironmentCubeMap.reset(TextureCube::Create("assets/textures/environments/DebugCubeMap.tga"));
+		m_EnvironmentIrradiance.reset(TextureCube::Create("assets/textures/environments/Arches_E_PineTree_Irradiance.tga"));
+		m_BRDFLUT.reset(Texture2D::Create("assets/textures/BRDF_LUT.tga"));
 
-		m_Framebuffer.reset(Hazel::Framebuffer::Create(1280, 720, Hazel::FramebufferFormat::RGBA16F));
-		m_FinalPresentBuffer.reset(Hazel::Framebuffer::Create(1280, 720, Hazel::FramebufferFormat::RGBA8));
+		m_Framebuffer.reset(Framebuffer::Create(1280, 720, FramebufferFormat::RGBA16F));
+		m_FinalPresentBuffer.reset(Framebuffer::Create(1280, 720, FramebufferFormat::RGBA8));
 
 		float x = -4.0f;
 		float roughness = 0.0f;
 		for (int i = 0; i < 8; i++)
 		{
-			Hazel::Ref<Hazel::MaterialInstance> mi(new Hazel::MaterialInstance(m_SphereMesh->GetMaterial()));
+			Ref<MaterialInstance> mi(new MaterialInstance(m_SphereMesh->GetMaterial()));
 			mi->Set("u_Metalness", 1.0f);
 			mi->Set("u_Roughness", roughness);
 			mi->Set("u_ModelMatrix", translate(mat4(1.0f), vec3(x, 0.0f, 0.0f)));
@@ -86,7 +122,7 @@ public:
 		roughness = 0.0f;
 		for (int i = 0; i < 8; i++)
 		{
-			Hazel::Ref<Hazel::MaterialInstance> mi(new Hazel::MaterialInstance(m_SphereMesh->GetMaterial()));
+			Ref<MaterialInstance> mi(new MaterialInstance(m_SphereMesh->GetMaterial()));
 			mi->Set("u_Metalness", 0.0f);
 			mi->Set("u_Roughness", roughness);
 			mi->Set("u_ModelMatrix", translate(mat4(1.0f), vec3(x, 1.2f, 0.0f)));
@@ -95,7 +131,7 @@ public:
 			m_DielectricSphereMaterialInstances.push_back(mi);
 		}
 
-		// Create Quad
+		// Create fullscreen quad for final composite
 		x = -1;
 		float y = -1;
 		float width = 2, height = 2;
@@ -119,23 +155,36 @@ public:
 		data[3].Position = glm::vec3(x, y + height, 0);
 		data[3].TexCoord = glm::vec2(0, 1);
 
-		m_VertexBuffer.reset(Hazel::VertexBuffer::Create());
-		m_VertexBuffer->SetData(data, 4 * sizeof(QuadVertex));
+		m_FullscreenQuadVertexArray = VertexArray::Create();
+		auto quadVB = VertexBuffer::Create(data, 4 * sizeof(QuadVertex));
+		quadVB->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float2, "a_TexCoord" }
+		});
 
-		uint32_t* indices = new uint32_t[6]{ 0, 1, 2, 2, 3, 0, };
-		m_IndexBuffer.reset(Hazel::IndexBuffer::Create());
-		m_IndexBuffer->SetData(indices, 6 * sizeof(uint32_t));
+		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0, };
+		auto quadIB = IndexBuffer::Create(indices, 6 * sizeof(uint32_t));
 
+		m_FullscreenQuadVertexArray->AddVertexBuffer(quadVB);
+		m_FullscreenQuadVertexArray->SetIndexBuffer(quadIB);
+
+		// Set lights
 		m_Light.Direction = { -0.5f, -0.5f, 1.0f };
 		m_Light.Radiance = { 1.0f, 1.0f, 1.0f };
+
+		m_Transform = glm::scale(glm::mat4(1.0f), glm::vec3(m_MeshScale));
 	}
 
-	virtual void OnDetach() override
+	void EditorLayer::OnDetach()
 	{
 	}
 
-	virtual void OnUpdate(Hazel::TimeStep ts) override
+	void EditorLayer::OnUpdate(TimeStep ts)
 	{
+		// THINGS TO LOOK AT:
+		// - BRDF LUT
+		// - Cubemap mips and filtering
+		// - Tonemapping and proper HDR pipeline
 		using namespace Hazel;
 		using namespace glm;
 
@@ -151,9 +200,8 @@ public:
 		m_QuadShader->Bind();
 		m_QuadShader->SetMat4("u_InverseVP", inverse(viewProjection));
 		m_EnvironmentIrradiance->Bind(0);
-		m_VertexBuffer->Bind();
-		m_IndexBuffer->Bind();
-		Renderer::DrawIndexed(m_IndexBuffer->GetCount(), false);
+		m_FullscreenQuadVertexArray->Bind();
+		Renderer::DrawIndexed(m_FullscreenQuadVertexArray->GetIndexBuffer()->GetCount(), false);
 
 		m_MeshMaterial->Set("u_AlbedoColor", m_AlbedoInput.Color);
 		m_MeshMaterial->Set("u_Metalness", m_MetalnessInput.Value);
@@ -169,21 +217,6 @@ public:
 		m_MeshMaterial->Set("u_RoughnessTexToggle", m_RoughnessInput.UseTexture ? 1.0f : 0.0f);
 		m_MeshMaterial->Set("u_EnvMapRotation", m_EnvMapRotation);
 
-#if 0
-		// Bind default texture unit
-		UploadUniformInt("u_Texture", 0);
-
-		// PBR shader textures
-		UploadUniformInt("u_AlbedoTexture", 1);
-		UploadUniformInt("u_NormalTexture", 2);
-		UploadUniformInt("u_MetalnessTexture", 3);
-		UploadUniformInt("u_RoughnessTexture", 4);
-
-		UploadUniformInt("u_EnvRadianceTex", 10);
-		UploadUniformInt("u_EnvIrradianceTex", 11);
-
-		UploadUniformInt("u_BRDFLUTTexture", 15);
-#endif
 		m_MeshMaterial->Set("u_EnvRadianceTex", m_EnvironmentCubeMap);
 		m_MeshMaterial->Set("u_EnvIrradianceTex", m_EnvironmentIrradiance);
 		m_MeshMaterial->Set("u_BRDFLUTTexture", m_BRDFLUT);
@@ -227,7 +260,8 @@ public:
 		else if (m_Scene == Scene::Model)
 		{
 			if (m_Mesh)
-				m_Mesh->Render(ts, scale(mat4(1.0f), vec3(m_MeshScale)), m_MeshMaterial);
+				//m_Mesh->Render(ts, scale(mat4(1.0f), vec3(m_MeshScale)), m_MeshMaterial);
+				m_Mesh->Render(ts, m_Transform, m_MeshMaterial);
 		}
 
 		m_GridMaterial->Set("u_MVP", viewProjection * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
@@ -239,18 +273,12 @@ public:
 		m_HDRShader->Bind();
 		m_HDRShader->SetFloat("u_Exposure", m_Exposure);
 		m_Framebuffer->BindTexture();
-		m_VertexBuffer->Bind();
-		m_IndexBuffer->Bind();
-		Renderer::DrawIndexed(m_IndexBuffer->GetCount(), false);
+		m_FullscreenQuadVertexArray->Bind();
+		Renderer::DrawIndexed(m_FullscreenQuadVertexArray->GetIndexBuffer()->GetCount(), false);
 		m_FinalPresentBuffer->Unbind();
 	}
 
-	enum class PropertyFlag
-	{
-		None = 0, ColorProperty = 1
-	};
-
-	void Property(const std::string& name, bool& value)
+	void EditorLayer::Property(const std::string& name, bool& value)
 	{
 		ImGui::Text(name.c_str());
 		ImGui::NextColumn();
@@ -263,7 +291,7 @@ public:
 		ImGui::NextColumn();
 	}
 
-	void Property(const std::string& name, float& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None)
+	void EditorLayer::Property(const std::string& name, float& value, float min, float max, EditorLayer::PropertyFlag flags)
 	{
 		ImGui::Text(name.c_str());
 		ImGui::NextColumn();
@@ -276,12 +304,12 @@ public:
 		ImGui::NextColumn();
 	}
 
-	void Property(const std::string& name, glm::vec3& value, PropertyFlag flags)
+	void EditorLayer::Property(const std::string& name, glm::vec3& value, EditorLayer::PropertyFlag flags)
 	{
 		Property(name, value, -1.0f, 1.0f, flags);
 	}
 
-	void Property(const std::string& name, glm::vec3& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None)
+	void EditorLayer::Property(const std::string& name, glm::vec3& value, float min, float max, EditorLayer::PropertyFlag flags)
 	{
 		ImGui::Text(name.c_str());
 		ImGui::NextColumn();
@@ -297,12 +325,12 @@ public:
 		ImGui::NextColumn();
 	}
 
-	void Property(const std::string& name, glm::vec4& value, PropertyFlag flags)
+	void EditorLayer::Property(const std::string& name, glm::vec4& value, EditorLayer::PropertyFlag flags)
 	{
 		Property(name, value, -1.0f, 1.0f, flags);
 	}
 
-	void Property(const std::string& name, glm::vec4& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None)
+	void EditorLayer::Property(const std::string& name, glm::vec4& value, float min, float max, EditorLayer::PropertyFlag flags)
 	{
 		ImGui::Text(name.c_str());
 		ImGui::NextColumn();
@@ -318,7 +346,7 @@ public:
 		ImGui::NextColumn();
 	}
 
-	virtual void OnImGuiRender() override
+	void EditorLayer::OnImGuiRender()
 	{
 		static bool p_open = true;
 
@@ -342,8 +370,8 @@ public:
 		}
 
 		// When using ImGuiDockNodeFlags_PassthruDockspace, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
-		if (opt_flags & ImGuiDockNodeFlags_PassthruDockspace)
-			window_flags |= ImGuiWindowFlags_NoBackground;
+		//if (opt_flags & ImGuiDockNodeFlags_PassthruDockspace)
+		//	window_flags |= ImGuiWindowFlags_NoBackground;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("DockSpace Demo", &p_open, window_flags);
@@ -362,11 +390,12 @@ public:
 
 		// Editor Panel ------------------------------------------------------------------------------
 		ImGui::Begin("Model");
-		ImGui::RadioButton("Spheres", (int*)&m_Scene, (int)Scene::Spheres);
+		ImGui::RadioButton("Spheres", (int*)& m_Scene, (int)Scene::Spheres);
 		ImGui::SameLine();
-		ImGui::RadioButton("Model", (int*)&m_Scene, (int)Scene::Model);
+		ImGui::RadioButton("Model", (int*)& m_Scene, (int)Scene::Model);
 
 		ImGui::Begin("Environment");
+
 		ImGui::Columns(2);
 		ImGui::AlignTextToFramePadding();
 
@@ -374,6 +403,8 @@ public:
 		Property("Light Radiance", m_Light.Radiance, PropertyFlag::ColorProperty);
 		Property("Light Multiplier", m_LightMultiplier, 0.0f, 5.0f);
 		Property("Exposure", m_Exposure, 0.0f, 5.0f);
+
+		Property("Mesh Scale", m_MeshScale, 0.0f, 2.0f);
 
 		Property("Radiance Prefiltering", m_RadiancePrefilter);
 		Property("Env Map Rotation", m_EnvMapRotation, -360.0f, 360.0f);
@@ -391,9 +422,12 @@ public:
 			ImGui::Text(path.c_str()); ImGui::SameLine();
 			if (ImGui::Button("...##Mesh"))
 			{
-				std::string filename = Hazel::Application::Get().OpenFile("");
+				std::string filename = Application::Get().OpenFile("");
 				if (filename != "")
-					m_Mesh.reset(new Hazel::Mesh(filename));
+				{
+					m_Mesh.reset(new Mesh(filename));
+					m_MeshMaterial.reset(new MaterialInstance(m_Mesh->GetMaterial()));
+				}
 			}
 		}
 		ImGui::Separator();
@@ -419,9 +453,9 @@ public:
 					}
 					if (ImGui::IsItemClicked())
 					{
-						std::string filename = Hazel::Application::Get().OpenFile("");
+						std::string filename = Application::Get().OpenFile("");
 						if (filename != "")
-							m_AlbedoInput.TextureMap.reset(Hazel::Texture2D::Create(filename, m_AlbedoInput.SRGB));
+							m_AlbedoInput.TextureMap.reset(Texture2D::Create(filename, m_AlbedoInput.SRGB));
 					}
 				}
 				ImGui::SameLine();
@@ -430,7 +464,7 @@ public:
 				if (ImGui::Checkbox("sRGB##AlbedoMap", &m_AlbedoInput.SRGB))
 				{
 					if (m_AlbedoInput.TextureMap)
-						m_AlbedoInput.TextureMap.reset(Hazel::Texture2D::Create(m_AlbedoInput.TextureMap->GetPath(), m_AlbedoInput.SRGB));
+						m_AlbedoInput.TextureMap.reset(Texture2D::Create(m_AlbedoInput.TextureMap->GetPath(), m_AlbedoInput.SRGB));
 				}
 				ImGui::EndGroup();
 				ImGui::SameLine();
@@ -457,9 +491,9 @@ public:
 					}
 					if (ImGui::IsItemClicked())
 					{
-						std::string filename = Hazel::Application::Get().OpenFile("");
+						std::string filename = Application::Get().OpenFile("");
 						if (filename != "")
-							m_NormalInput.TextureMap.reset(Hazel::Texture2D::Create(filename));
+							m_NormalInput.TextureMap.reset(Texture2D::Create(filename));
 					}
 				}
 				ImGui::SameLine();
@@ -486,9 +520,9 @@ public:
 					}
 					if (ImGui::IsItemClicked())
 					{
-						std::string filename = Hazel::Application::Get().OpenFile("");
+						std::string filename = Application::Get().OpenFile("");
 						if (filename != "")
-							m_MetalnessInput.TextureMap.reset(Hazel::Texture2D::Create(filename));
+							m_MetalnessInput.TextureMap.reset(Texture2D::Create(filename));
 					}
 				}
 				ImGui::SameLine();
@@ -517,9 +551,9 @@ public:
 					}
 					if (ImGui::IsItemClicked())
 					{
-						std::string filename = Hazel::Application::Get().OpenFile("");
+						std::string filename = Application::Get().OpenFile("");
 						if (filename != "")
-							m_RoughnessInput.TextureMap.reset(Hazel::Texture2D::Create(filename));
+							m_RoughnessInput.TextureMap.reset(Texture2D::Create(filename));
 					}
 				}
 				ImGui::SameLine();
@@ -533,7 +567,7 @@ public:
 
 		if (ImGui::TreeNode("Shaders"))
 		{
-			auto& shaders = Hazel::Shader::s_AllShaders;
+			auto& shaders = Shader::s_AllShaders;
 			for (auto& shader : shaders)
 			{
 				if (ImGui::TreeNode(shader->GetName().c_str()))
@@ -547,10 +581,19 @@ public:
 			ImGui::TreePop();
 		}
 
+
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Viewport");
+
+		/*float posX = ImGui::GetCursorScreenPos().x;
+		float posY = ImGui::GetCursorScreenPos().y;
+
+		auto [wx, wy] = Application::Get().GetWindow().GetWindowPos();
+		posX -= wx;
+		posY -= wy;
+		HZ_INFO("{0}, {1}", posX, posY);*/
 
 		auto viewportSize = ImGui::GetContentRegionAvail();
 		m_Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
@@ -558,6 +601,18 @@ public:
 		m_Camera.SetProjectionMatrix(glm::perspectiveFov(glm::radians(45.0f), viewportSize.x, viewportSize.y, 0.1f, 10000.0f));
 		m_Camera.SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 		ImGui::Image((void*)m_FinalPresentBuffer->GetColorAttachmentRendererID(), viewportSize, { 0, 1 }, { 1, 0 });
+
+		// Gizmos
+		if (m_GizmoType != -1)
+		{
+			float rw = (float)ImGui::GetWindowWidth();
+			float rh = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
+			ImGuizmo::Manipulate(glm::value_ptr(m_Camera.GetViewMatrix()), glm::value_ptr(m_Camera.GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(m_Transform));
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -572,7 +627,7 @@ public:
 				if (ImGui::MenuItem("Flag: NoSplit", "", (opt_flags & ImGuiDockNodeFlags_NoSplit) != 0))                 opt_flags ^= ImGuiDockNodeFlags_NoSplit;
 				if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (opt_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0))  opt_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode;
 				if (ImGui::MenuItem("Flag: NoResize", "", (opt_flags & ImGuiDockNodeFlags_NoResize) != 0))                opt_flags ^= ImGuiDockNodeFlags_NoResize;
-				if (ImGui::MenuItem("Flag: PassthruDockspace", "", (opt_flags & ImGuiDockNodeFlags_PassthruDockspace) != 0))       opt_flags ^= ImGuiDockNodeFlags_PassthruDockspace;
+				//if (ImGui::MenuItem("Flag: PassthruDockspace", "", (opt_flags & ImGuiDockNodeFlags_PassthruDockspace) != 0))       opt_flags ^= ImGuiDockNodeFlags_PassthruDockspace;
 				if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (opt_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0))          opt_flags ^= ImGuiDockNodeFlags_AutoHideTabBar;
 				ImGui::Separator();
 				if (ImGui::MenuItem("Close DockSpace", NULL, false, p_open != NULL))
@@ -594,111 +649,35 @@ public:
 
 		if (m_Mesh)
 			m_Mesh->OnImGuiRender();
+
+		// static bool o = true;
+		// ImGui::ShowDemoWindow(&o);
 	}
 
-	virtual void OnEvent(Hazel::Event& event) override
+	void EditorLayer::OnEvent(Event& event)
 	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));
 	}
 
-	bool OnKeyPressedEvent(Hazel::KeyPressedEvent& event)
+	bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
+		switch (e.GetKeyCode())
+		{
+		case HZ_KEY_Q:
+			m_GizmoType = -1;
+			break;
+		case HZ_KEY_W:
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		case HZ_KEY_E:
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		case HZ_KEY_R:
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
 		return false;
 	}
 
-private:
-	Hazel::Ref<Hazel::Shader> m_QuadShader;
-	Hazel::Ref<Hazel::Shader> m_HDRShader;
-	Hazel::Ref<Hazel::Shader> m_GridShader;
-	Hazel::Ref<Hazel::Mesh> m_Mesh;
-	Hazel::Ref<Hazel::Mesh> m_SphereMesh, m_PlaneMesh;
-	Hazel::Ref<Hazel::Texture2D> m_BRDFLUT;
-
-	Hazel::Ref<Hazel::MaterialInstance> m_MeshMaterial;
-	Hazel::Ref<Hazel::MaterialInstance> m_GridMaterial;
-	std::vector<Hazel::Ref<Hazel::MaterialInstance>> m_MetalSphereMaterialInstances;
-	std::vector<Hazel::Ref<Hazel::MaterialInstance>> m_DielectricSphereMaterialInstances;
-
-	float m_GridScale = 16.025f, m_GridSize = 0.025f;
-	float m_MeshScale = 1.0f;
-
-	struct AlbedoInput
-	{
-		glm::vec3 Color = { 0.972f, 0.96f, 0.915f }; // Silver, from https://docs.unrealengine.com/en-us/Engine/Rendering/Materials/PhysicallyBased
-		Hazel::Ref<Hazel::Texture2D> TextureMap;
-		bool SRGB = true;
-		bool UseTexture = false;
-	};
-	AlbedoInput m_AlbedoInput;
-
-	struct NormalInput
-	{
-		Hazel::Ref<Hazel::Texture2D> TextureMap;
-		bool UseTexture = false;
-	};
-	NormalInput m_NormalInput;
-
-	struct MetalnessInput
-	{
-		float Value = 1.0f;
-		Hazel::Ref<Hazel::Texture2D> TextureMap;
-		bool UseTexture = false;
-	};
-	MetalnessInput m_MetalnessInput;
-
-	struct RoughnessInput
-	{
-		float Value = 0.5f;
-		Hazel::Ref<Hazel::Texture2D> TextureMap;
-		bool UseTexture = false;
-	};
-	RoughnessInput m_RoughnessInput;
-
-	std::unique_ptr<Hazel::Framebuffer> m_Framebuffer, m_FinalPresentBuffer;
-
-	Hazel::Ref<Hazel::VertexBuffer> m_VertexBuffer;
-	Hazel::Ref<Hazel::IndexBuffer> m_IndexBuffer;
-	Hazel::Ref<Hazel::TextureCube> m_EnvironmentCubeMap, m_EnvironmentIrradiance;
-
-	Hazel::Camera m_Camera;
-
-	struct Light
-	{
-		glm::vec3 Direction;
-		glm::vec3 Radiance;
-	};
-	Light m_Light;
-	float m_LightMultiplier = 0.3f;
-
-	// PBR params
-	float m_Exposure = 1.0f;
-	bool m_RadiancePrefilter = false;
-	float m_EnvMapRotation = 0.0f;
-
-	enum class Scene : uint32_t
-	{
-		Spheres = 0, Model = 1
-	};
-	Scene m_Scene;
-
-	// Editor resources
-	std::unique_ptr<Hazel::Texture2D> m_CheckerboardTex;
-};
-
-class Sandbox : public Hazel::Application
-{
-public:
-	Sandbox()
-	{
-		HZ_TRACE("Hello!");
-	}
-
-	virtual void OnInit() override
-	{
-		PushLayer(new EditorLayer());
-	}
-};
-
-Hazel::Application* Hazel::CreateApplication()
-{
-	return new Sandbox();
 }

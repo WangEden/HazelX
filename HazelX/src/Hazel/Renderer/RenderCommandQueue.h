@@ -2,7 +2,7 @@
 
 namespace Hazel {
 
-	class HAZEL_API RenderCommandQueue
+	class RenderCommandQueue
 	{
 	public:
 		typedef void(*RenderCommandFn)(void*);

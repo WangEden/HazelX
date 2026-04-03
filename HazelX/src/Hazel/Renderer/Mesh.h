@@ -5,6 +5,7 @@
 
 #include "Hazel/Core/TimeStep.h"
 
+#include "Hazel/Renderer/VertexArray.h"
 #include "Hazel/Renderer/Buffer.h"
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/Material.h"
@@ -150,8 +151,7 @@ namespace Hazel {
 		uint32_t m_BoneCount = 0;
 		std::vector<BoneInfo> m_BoneInfo;
 
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
+		Ref<VertexArray> m_VertexArray;
 
 		std::vector<Vertex> m_StaticVertices;
 		std::vector<AnimatedVertex> m_AnimatedVertices;

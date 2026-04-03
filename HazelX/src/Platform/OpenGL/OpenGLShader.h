@@ -10,7 +10,9 @@ namespace Hazel {
 	class OpenGLShader : public Shader
 	{
 	public:
+		OpenGLShader() = default;
 		OpenGLShader(const std::string& filepath);
+		static Ref<OpenGLShader> CreateFromString(const std::string& source);
 
 		virtual void Reload() override;
 		virtual void AddShaderReloadedCallback(const ShaderReloadedCallback& callback) override;
@@ -27,6 +29,7 @@ namespace Hazel {
 		virtual void SetMat4FromRenderThread(const std::string& name, const glm::mat4& value) override;
 
 		virtual const std::string& GetName() const override { return m_Name; }
+		void Load(const std::string& source);
 	private:
 		std::string ReadShaderFromFile(const std::string& filepath) const;
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
