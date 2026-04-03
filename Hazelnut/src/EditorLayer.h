@@ -30,7 +30,7 @@ namespace Hazel {
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
-		virtual void OnUpdate(TimeStep ts) override;
+		virtual void OnUpdate(Timestep ts) override;
 
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& event) override;
@@ -50,6 +50,7 @@ namespace Hazel {
 		Ref<Mesh> m_Mesh;
 		Ref<Mesh> m_SphereMesh, m_PlaneMesh;
 		Ref<Texture2D> m_BRDFLUT;
+		Ref<RenderPass> m_GeoPass, m_CompositePass;
 
 		Ref<MaterialInstance> m_MeshMaterial;
 		Ref<MaterialInstance> m_GridMaterial;
@@ -90,8 +91,6 @@ namespace Hazel {
 			bool UseTexture = false;
 		};
 		RoughnessInput m_RoughnessInput;
-
-		std::unique_ptr<Framebuffer> m_Framebuffer, m_FinalPresentBuffer;
 
 		Ref<VertexArray> m_FullscreenQuadVertexArray;
 		Ref<TextureCube> m_EnvironmentCubeMap, m_EnvironmentIrradiance;

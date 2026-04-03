@@ -5,7 +5,7 @@
  */
 #include "Hazel/Core/Application.h"
 #include "Hazel/Core/Log.h"
-#include "Hazel/Core/TimeStep.h"
+#include "Hazel/Core/Timestep.h"
 
 #include "Hazel/Core/Events/Event.h"
 #include "Hazel/Core/Events/ApplicationEvent.h"
@@ -20,6 +20,7 @@
 
 // ---------- Renderer ------------
 #include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/RenderPass.h"
 #include "Hazel/Renderer/Framebuffer.h"
 #include "Hazel/Renderer/Buffer.h"
 #include "Hazel/Renderer/VertexArray.h"

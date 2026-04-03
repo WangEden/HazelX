@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Hazel/Core/TimeStep.h"
+#include "Hazel/Core/Timestep.h"
 
 #include <glm/glm.hpp>
 
@@ -14,7 +14,7 @@ namespace Hazel {
 		Camera(const glm::mat4& projectionMatrix);
 
 		void Focus();
-		void Update(TimeStep ts);
+		void Update(Timestep ts);
 
 		inline float GetDistance() const { return m_Distance; }
 		inline void SetDistance(float distance) { m_Distance = distance; }

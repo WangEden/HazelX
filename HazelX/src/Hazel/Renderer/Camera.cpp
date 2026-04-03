@@ -57,7 +57,7 @@ namespace Hazel {
 		return speed;
 	}
 
-	void Camera::Update(TimeStep ts)
+	void Camera::Update(Timestep ts)
 	{
 		if (Input::IsKeyPressed(GLFW_KEY_LEFT_ALT))
 		{
