@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/Renderer2D.h"
 #include "Hazel/Renderer/Framebuffer.h"
 #include <GLFW/glfw3.h>
 
@@ -33,6 +34,7 @@ namespace Hazel {
 		PushOverlay(m_ImGuiLayer);
 
 		Renderer::Init();
+		Renderer2D::Init();
 		Renderer::Get().WaitAndRender();
 	}
 

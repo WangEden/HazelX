@@ -20,6 +20,7 @@
 
 // ---------- Renderer ------------
 #include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/Renderer2D.h"
 #include "Hazel/Renderer/RenderPass.h"
 #include "Hazel/Renderer/Framebuffer.h"
 #include "Hazel/Renderer/Buffer.h"
@@ -28,5 +29,10 @@
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/Mesh.h"
 #include "Hazel/Renderer/Camera.h"
+#include "Hazel/Renderer/OrthographicCamera.h"
 #include "Hazel/Renderer/Material.h"
+// --------------------------------
+
+// ---------- Physics ------------
+#include "Hazel/Physics2D/Physics2D.h"
 // --------------------------------

@@ -2,6 +2,7 @@
 #include <Hazel/EntryPoint.h>
 
 #include "EditorLayer.h"
+#include "FluidSimLayer.h"
 
 class HazelnutApplication : public Hazel::Application
 {
@@ -13,7 +14,8 @@ public:
 
 	virtual void OnInit() override
 	{
-		PushLayer(new Hazel::EditorLayer());
+		//PushLayer(new Hazel::EditorLayer());
+		PushLayer(new Hazel::FluidSimLayer());
 	}
 };
 
