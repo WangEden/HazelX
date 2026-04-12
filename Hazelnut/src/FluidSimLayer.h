@@ -33,23 +33,6 @@ namespace Hazel {
 	private:
 		void ResetParticles();
 		void ResetParameter();
-
-		float CalculateDensity(glm::vec2 samplePoint)
-		{
-			float density = 0.0f;
-			const float mass = 1.0f; // 假设每个粒子的质量为 1
-
-			for (const glm::vec2& position : m_Positions)
-			{
-				// 两点间的直线距离
-				float dst = glm::distance(position, samplePoint);
-				float influence = Physics2D::SmoothingKernel(m_SmoothingRadius, dst, m_Poly6ScalingFactor);
-				density += mass * influence;
-			}
-
-			return density;
-		}
-
 	private:
 		//Camera m_Camera;
 		OrthographicCamera m_Camera;
@@ -58,19 +41,30 @@ namespace Hazel {
 		bool m_ViewportFocused = false;
 
 		// --- 流体物理数据 ---
-		std::vector<glm::vec2> m_Positions;
-		std::vector<glm::vec2> m_Velocities;
+		std::vector<Particle2D> m_Particles;
 
 		int m_ParticleCount = 1000;
-		float m_Gravity = -9.8f;
-		float m_ParticleRadius = 0.16f;
-		float m_CollisionDamping = 0.7f;
+		float m_Gravity = -9.81f;
+		float m_ParticleRadius = 0.08f;
+		float m_CollisionDamping = 0.5f;
 
 		float m_BoxWidth = 20.0f;
 		float m_BoxHeight = 15.0f;
 
-		float m_SmoothingRadius = 0.48f;
+		float m_SmoothingRadius = 0.25f;
 		float m_Poly6ScalingFactor = 4.0f / (glm::pi<float>() * std::pow(m_SmoothingRadius, 8.0f));
+
+		float m_TargetDensity = 1.0f; // 目标密度
+		float m_PressureMultiplier = 200.0f; // 压力系数
+		float m_ViscosityStrength = 0.05f;    // 粘性系数
+
+		void FluidSimLayer::UpdateScalingFactors()
+		{
+			// Poly6 核函数用于密度计算的系数 (2D 标准化系数为 4 / (pi * h^8))
+			m_Poly6ScalingFactor = 4.0f / (glm::pi<float>() * std::pow(m_SmoothingRadius, 8.0f));
+
+			// 如果你用了 Spiky Kernel，也要在这里更新它的系数
+		}
 	};
 
 }

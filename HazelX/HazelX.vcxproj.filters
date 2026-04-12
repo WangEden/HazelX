@@ -13,8 +13,14 @@
     <Filter Include="src\Hazel\Core\Events">
       <UniqueIdentifier>{2C1D8DEB-9889-48E6-617D-E043CDA86A4E}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hazel\Core\Math">
+      <UniqueIdentifier>{21E4F85A-8D45-D668-16B3-1C1B82130D28}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Hazel\ImGui">
       <UniqueIdentifier>{1AE138B3-866C-A677-8F7D-296CFB870278}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Hazel\Physics2D">
+      <UniqueIdentifier>{9892230F-04F4-001D-8D61-47CFF9C137DC}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Hazel\Renderer">
       <UniqueIdentifier>{9669EB43-824D-AC99-EBAD-A6ECD7B0961B}</UniqueIdentifier>
@@ -96,10 +102,22 @@
     <ClInclude Include="src\Hazel\Core\Log.h">
       <Filter>src\Hazel\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hazel\Core\Math\AABB.h">
+      <Filter>src\Hazel\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Core\Math\Frustum.h">
+      <Filter>src\Hazel\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Core\Math\Ray.h">
+      <Filter>src\Hazel\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Core\Math\Sphere.h">
+      <Filter>src\Hazel\Core\Math</Filter>
+    </ClInclude>
     <ClInclude Include="src\Hazel\Core\MouseButtonCodes.h">
       <Filter>src\Hazel\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hazel\Core\Timestep.h">
+    <ClInclude Include="src\Hazel\Core\TimeStep.h">
       <Filter>src\Hazel\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Core\Window.h">
@@ -113,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="src\Hazel\ImGui\ImGuizmo.h">
       <Filter>src\Hazel\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Physics2D\Physics2D.h">
+      <Filter>src\Hazel\Physics2D</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Buffer.h">
       <Filter>src\Hazel\Renderer</Filter>
@@ -142,6 +163,9 @@
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\Renderer.h">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hazel\Renderer\Renderer2D.h">
       <Filter>src\Hazel\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Renderer\RendererAPI.h">
@@ -1466,7 +1490,7 @@
     <ClCompile Include="src\Hazel\Core\Log.cpp">
       <Filter>src\Hazel\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Hazel\Core\Timestep.cpp">
+    <ClCompile Include="src\Hazel\Core\TimeStep.cpp">
       <Filter>src\Hazel\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Core\Window.cpp">
@@ -1480,6 +1504,9 @@
     </ClCompile>
     <ClCompile Include="src\Hazel\ImGui\ImGuizmo.cpp">
       <Filter>src\Hazel\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Physics2D\Physics2D.cpp">
+      <Filter>src\Hazel\Physics2D</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Buffer.cpp">
       <Filter>src\Hazel\Renderer</Filter>
@@ -1506,6 +1533,9 @@
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Renderer.cpp">
+      <Filter>src\Hazel\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hazel\Renderer\Renderer2D.cpp">
       <Filter>src\Hazel\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Hazel\Renderer\Shader.cpp">

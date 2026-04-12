@@ -7,6 +7,14 @@
 
 namespace Hazel {
 
+	struct Particle2D
+	{
+		glm::vec2 Position;
+		glm::vec2 Velocity;
+		float Density;
+		float Property;
+	};
+
 	class Physics2D
 	{
 	public:
@@ -32,6 +40,64 @@ namespace Hazel {
 			// 省去移动函数的体积计算，用提前算好的值带入
 			return value * value * value * scalingFactor; 
 		}
+
+		// 粒子场梯度的核函数（Spiky Kernel 的梯度）
+		static float SmoothingKernelDerivative(float radius, float dst) {
+			if (dst >= radius || dst <= 0.0f) return 0.0f;
+			float v = radius - dst;
+			return -v * v * 12.0f / (pow(radius, 4.0f) * PI); // 简化示例：Spiky kernel 导数
+		}
+
+		// 计算单个粒子场密度
+		static float CalculateDensity(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
+			float smoothingRadius, float poly6ScalingFactor)
+		{
+			float density = 0.0f;
+			const float mass = 1.0f; // 假设每个粒子的质量为 1
+			for (const Particle2D& particle : particles)
+			{
+				// 两点间的直线距离
+				float dst = glm::distance(particle.Position, sampleParticle.Position);
+				float influence = SmoothingKernel(smoothingRadius, dst, poly6ScalingFactor);
+				density += mass * influence;
+			}
+			return density;
+		}
+
+		// 计算粒子属性变动微分
+		static float CalculateProperty(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
+			float smoothingRadius, float poly6ScalingFactor)
+		{
+			float property = 0.0f;
+			const float mass = 1.0f;
+
+			for (const Particle2D& particle : particles)
+			{
+				float dst = glm::distance(particle.Position, sampleParticle.Position);
+				float influence = SmoothingKernel(smoothingRadius, dst, poly6ScalingFactor);
+				float density = CalculateDensity(sampleParticle, particles, smoothingRadius, poly6ScalingFactor);
+				property += particle.Property * influence * mass / density; // 这里简单地用密度归一化属性值
+
+			}
+			return property;
+		}
+
+		// 计算粒子场梯度
+		static glm::vec2 CalculateGradient(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
+			float smoothingRadius, float poly6ScalingFactor)
+		{
+			const float stepSize = 0.001f; // 用于数值微分的步长
+
+			Particle2D samplePointChange = sampleParticle;
+			samplePointChange.Position.x += stepSize;
+			samplePointChange.Position.y += stepSize;
+
+			float deltaX = CalculateProperty(samplePointChange, particles, smoothingRadius, poly6ScalingFactor) - CalculateProperty(sampleParticle, particles, smoothingRadius, poly6ScalingFactor);
+			float deltaY = CalculateProperty(samplePointChange, particles, smoothingRadius, poly6ScalingFactor) - CalculateProperty(sampleParticle, particles, smoothingRadius, poly6ScalingFactor);
+
+			return glm::vec2(deltaX / stepSize, deltaY / stepSize);
+		}
+
 	};
 
 }
