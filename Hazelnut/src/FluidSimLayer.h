@@ -39,7 +39,7 @@ namespace Hazel {
 			m_Gravity = -9.81f;
 			//m_Gravity = 0.0f;
 
-			m_ParticleRadius = 0.08f;
+			m_ParticleRadius = 0.04f;
 			m_CollisionDamping = 1.0f;		// 碰撞阻尼，1.0表示弹性碰撞
 
 			m_SmoothingRadius = 0.25f;
