@@ -41,13 +41,10 @@ namespace Hazel {
 
 		if (dist < minDst)
 		{
-			// 1. 计算碰撞法线
 			glm::vec2 normal = glm::normalize(position - circleCenter);
 
-			// 2. 修正位置：将粒子推到圆周边缘，防止卡入
 			position = circleCenter + normal * minDst;
 
-			// 3. 修正速度：计算反射向量 (v_out = v_in - 2*(v_in·n)*n) 并施加阻尼
 			float dot = glm::dot(velocity, normal);
 			if (dot < 0) // 只有当粒子向圆心运动时才反弹
 			{

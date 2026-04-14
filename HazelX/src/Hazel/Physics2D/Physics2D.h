@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <algorithm>
 
-#define PI 3.141593
+#include <glm/gtx/type_aligned.hpp>
 
 namespace Hazel {
 
@@ -31,26 +31,27 @@ namespace Hazel {
 			const glm::vec2& boundMin, const glm::vec2& boundMax, float damping = 0.7f);
 
 		// 单个粒子场的核函数
-		static float SmoothingKernel(float radius, float dst, float scalingFactor)
+		static float SmoothingKernel(float radius, float dst)
 		{
-			// 提前裁剪：如果距离大于平滑半径，影响严格为 0
 			if (dst >= radius) return 0.0f;
-
 			float value = radius * radius - dst * dst;
-			// 省去移动函数的体积计算，用提前算好的值带入
-			return value * value * value * scalingFactor; 
+			float spikyScalingFactor = 30.0f / (glm::pi<float>() * std::pow(radius, 5.0f));
+			return value * value * value * spikyScalingFactor;
 		}
 
 		// 粒子场梯度的核函数（Spiky Kernel 的梯度）
 		static float SmoothingKernelDerivative(float radius, float dst) {
-			if (dst >= radius || dst <= 0.0f) return 0.0f;
+			if (dst >= radius || dst <= 1e-5f) return 0.0f;
+
 			float v = radius - dst;
-			return -v * v * 12.0f / (pow(radius, 4.0f) * PI); // 简化示例：Spiky kernel 导数
+			// 2D Spiky Kernel 导数标准化系数约为 30 / (pi * h^5)
+			float spikyScalingFactor = 30.0f / (glm::pi<float>() * std::pow(radius, 5.0f));
+			return v * v * spikyScalingFactor;
 		}
 
 		// 计算单个粒子场密度
 		static float CalculateDensity(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
-			float smoothingRadius, float poly6ScalingFactor)
+			float smoothingRadius)
 		{
 			float density = 0.0f;
 			const float mass = 1.0f; // 假设每个粒子的质量为 1
@@ -58,7 +59,7 @@ namespace Hazel {
 			{
 				// 两点间的直线距离
 				float dst = glm::distance(particle.Position, sampleParticle.Position);
-				float influence = SmoothingKernel(smoothingRadius, dst, poly6ScalingFactor);
+				float influence = SmoothingKernel(smoothingRadius, dst);
 				density += mass * influence;
 			}
 			return density;
@@ -66,7 +67,7 @@ namespace Hazel {
 
 		// 计算粒子属性变动微分
 		static float CalculateProperty(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
-			float smoothingRadius, float poly6ScalingFactor)
+			float smoothingRadius)
 		{
 			float property = 0.0f;
 			const float mass = 1.0f;
@@ -74,8 +75,8 @@ namespace Hazel {
 			for (const Particle2D& particle : particles)
 			{
 				float dst = glm::distance(particle.Position, sampleParticle.Position);
-				float influence = SmoothingKernel(smoothingRadius, dst, poly6ScalingFactor);
-				float density = CalculateDensity(sampleParticle, particles, smoothingRadius, poly6ScalingFactor);
+				float influence = SmoothingKernel(smoothingRadius, dst);
+				float density = CalculateDensity(sampleParticle, particles, smoothingRadius);
 				property += particle.Property * influence * mass / density; // 这里简单地用密度归一化属性值
 
 			}
@@ -84,7 +85,7 @@ namespace Hazel {
 
 		// 计算粒子场梯度
 		static glm::vec2 CalculateGradient(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
-			float smoothingRadius, float poly6ScalingFactor)
+			float smoothingRadius)
 		{
 			glm::vec2 gradient(0.0f);
 			const float mass = 1.0f;

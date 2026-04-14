@@ -31,42 +31,81 @@ namespace Hazel {
 		virtual void OnEvent(Event& event) override;
 
 	private:
+		void ResetAll();
 		void ResetParticles();
-		void ResetParameter();
+
+		void ResetParameter() {
+			m_ParticleCount = 7000;
+			m_Gravity = -9.81f;
+
+			m_ParticleRadius = 0.08f;
+			m_CollisionDamping = 1.0f;		// 碰撞阻尼，1.0表示弹性碰撞
+
+			m_SmoothingRadius = 0.25f;
+			m_TargetDensity = 8.0f;			// 目标密度
+			m_PressureMultiplier = 20.0f;	// 压力系数，值越大越难压缩
+			m_ViscosityStrength = 4.0f;		// 粘性系数，液体的粘稠度，越高液体越粘稠
+
+			m_BoxWidth = 25.0;
+			m_BoxHeight = 18.0f;
+
+			m_Obstacle.Center = { -2.0f, -5.0f };
+			m_Obstacle.Radius = 1.0f;
+			m_Obstacle.Enabled = true;
+		}
+
+		uint32_t CalculateHash(int gx, int gy) {
+			return ((uint32_t)gx * 73856093 ^ (uint32_t)gy * 19349663) % m_TableSize;
+		}
+
+		void BuildSpatialHash() {
+			m_SortedEntries.resize(m_Particles.size());
+			m_CellStart.assign(m_TableSize + 1, 0xFFFFFFFF); // 初始化为无效索引
+
+			float invH = 1.0f / m_SmoothingRadius;
+
+			for (int i = 0; i < m_Particles.size(); i++) {
+				int gx = (int)std::floor(m_Particles[i].Position.x * invH);
+				int gy = (int)std::floor(m_Particles[i].Position.y * invH);
+				m_SortedEntries[i] = { CalculateHash(gx, gy), (uint32_t)i };
+			}
+
+			std::sort(m_SortedEntries.begin(), m_SortedEntries.end(), [](const auto& a, const auto& b) {
+				return a.Hash < b.Hash;
+				});
+
+			for (uint32_t i = 0; i < m_SortedEntries.size(); i++) {
+				uint32_t hash = m_SortedEntries[i].Hash;
+				uint32_t prevHash = (i == 0) ? 0xFFFFFFFF : m_SortedEntries[i - 1].Hash;
+				if (hash != prevHash) {
+					m_CellStart[hash] = i;
+				}
+			}
+		}
+
 	private:
-		//Camera m_Camera;
 		OrthographicCamera m_Camera;
 		Ref<Framebuffer> m_Framebuffer; // 离屏渲染目标
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 		bool m_ViewportFocused = false;
 
-		// --- 流体物理数据 ---
 		std::vector<Particle2D> m_Particles;
 
-		const int PARTICLE_COUNT = 1000;
+		int m_ParticleCount = 0;
+		float m_Gravity = 0.0f;
+		float m_ParticleRadius = 0.0f;
+		float m_CollisionDamping = 0.0f;
 
-		int m_ParticleCount = PARTICLE_COUNT;
-		float m_Gravity = -9.81f;
-		float m_ParticleRadius = 0.08f;
-		float m_CollisionDamping = 0.5f;
+		float m_BoxWidth = 0.0f;
+		float m_BoxHeight = 0.0f;
 
-		float m_BoxWidth = 20.0f;
-		float m_BoxHeight = 15.0f;
+		float m_SmoothingRadius = 0.0f;
 
-		float m_SmoothingRadius = 0.25f;
-		float m_Poly6ScalingFactor = 4.0f / (glm::pi<float>() * std::pow(m_SmoothingRadius, 8.0f));
+		float m_TargetDensity = 0.0f;
+		float m_PressureMultiplier = 0.0f;
+		float m_ViscosityStrength = 0.0f;
 
-		float m_TargetDensity = 1.0f; // 目标密度
-		float m_PressureMultiplier = 200.0f; // 压力系数
-		float m_ViscosityStrength = 0.05f;    // 粘性系数
-
-		void FluidSimLayer::UpdateScalingFactors()
-		{
-			// Poly6 核函数用于密度计算的系数 (2D 标准化系数为 4 / (pi * h^8))
-			m_Poly6ScalingFactor = 4.0f / (glm::pi<float>() * std::pow(m_SmoothingRadius, 8.0f));
-
-			// 如果你用了 Spiky Kernel，也要在这里更新它的系数
-		}
+		int m_HashGridStep = 1; // Hash邻域半径
 
 		struct Obstacle {
 			glm::vec2 Center = { 0.0f, -2.0f };
@@ -74,6 +113,16 @@ namespace Hazel {
 			bool Enabled = true;
 		};
 		Obstacle m_Obstacle;
+
+		struct ParticleEntry { // 空间网格hash
+			uint32_t Hash;
+			uint32_t Index;
+		};
+
+		std::vector<ParticleEntry> m_SortedEntries; // 存储排序后的条目
+		std::vector<uint32_t> m_CellStart; // 存储每个哈希值在 SortedEntries 中的起始位置
+		const uint32_t m_TableSize = 65536; // 假设哈希表大小为 2^16 = 65536
+		
 	};
 
 }

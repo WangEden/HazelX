@@ -24,6 +24,7 @@ namespace Hazel {
 
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
+		ResetParameter();
 		ResetParticles();
 	}
 
@@ -35,12 +36,9 @@ namespace Hazel {
 	{
 		m_Particles.clear();
 
-		// 重新根据设定的 m_ParticleCount 调整布局
 		int particlesPerRow = (int)std::sqrt(m_ParticleCount);
 		int particlesPerCol = (m_ParticleCount + particlesPerRow - 1) / particlesPerRow;
 
-		// 关键点：初始间距不宜过大也不宜过小
-		// 建议略小于 m_SmoothingRadius，确保初始就有一定的密度贡献
 		float spacing = m_ParticleRadius * 2.0f;
 
 		float startX = -(particlesPerRow * spacing) / 2.0f;
@@ -50,96 +48,107 @@ namespace Hazel {
 			for (int x = 0; x < particlesPerRow; x++) {
 				if (m_Particles.size() >= m_ParticleCount) break;
 
-				// 初始化位置、速度为0、密度为0、压力(Property)为0
 				m_Particles.push_back({
 					{ startX + x * spacing, startY + y * spacing },
 					{ 0.0f, 0.0f },
 					0.0f,
 					0.0f
-					});
+				});
 			}
 		}
 
-		// 更新实际生成的数量
 		m_ParticleCount = (int)m_Particles.size();
 	}
 
-	void FluidSimLayer::ResetParameter()
+	void FluidSimLayer::ResetAll()
 	{
-		// 基础物理常数
-		m_ParticleCount = PARTICLE_COUNT;
-		m_Gravity = -9.81f;
-		m_ParticleRadius = 0.08f;
-		m_CollisionDamping = 0.5f;
-
-		// SPH 特有参数
-		m_SmoothingRadius = 0.25f;
-		m_TargetDensity = 1.0f;
-		m_PressureMultiplier = 200.0f;
-		m_ViscosityStrength = 0.05f;
-
-		// 环境尺寸
-		m_BoxWidth = 20.0f;
-		m_BoxHeight = 15.0f;
-
-		// 核心：必须重新计算与半径相关的缩放因子
-		UpdateScalingFactors();
+		ResetParameter();
 		ResetParticles();
 	}
 
 	void FluidSimLayer::OnUpdate(Timestep ts)
 	{
-		// 处理视口大小改变
 		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
-			// 调整正交相机的宽高比边界，防止画面拉伸
 			float aspectRatio = m_ViewportSize.x / m_ViewportSize.y;
 			float orthoSize = 10.0f; // 相机视野高度的一半
 			m_Camera.SetProjection(-orthoSize * aspectRatio, orthoSize * aspectRatio, -orthoSize, orthoSize);
 		}
 
-		// 静态圆测试
-		//Renderer2D::DrawCircle({ 0.0f, 0.0f }, 2.0f, { 1.0f, 0.0f, 0.0f, 1.0f });
+		float dt = std::min(ts.GetSeconds(), 0.016f);
+		float invH = 1.0f / m_SmoothingRadius;
 
-		float dt = std::min(ts.GetSeconds(), 0.016f); // 锁定步长防止物理崩溃
+		BuildSpatialHash();
 
 		// 1. 计算所有粒子的密度和压力
-		for (auto& p : m_Particles) {
-			p.Density = Physics2D::CalculateDensity(p, m_Particles, m_SmoothingRadius, m_Poly6ScalingFactor);
-			// 简单的状态方程：P = k * (rho - rho0)
-			p.Property = (p.Density - m_TargetDensity) * m_PressureMultiplier;
+		for (int i = 0; i < m_Particles.size(); i++)
+		{
+			auto& p = m_Particles[i];
+			float density = 0.0f;
+
+			int gx = (int)std::floor(p.Position.x * invH);
+			int gy = (int)std::floor(p.Position.y * invH);
+
+			for (int x = -m_HashGridStep; x <= m_HashGridStep; x++) {
+				for (int y = -m_HashGridStep; y <= m_HashGridStep; y++) {
+					uint32_t hash = CalculateHash(gx + x, gy + y);
+					UINT32 startIdx = m_CellStart[hash];
+					if (startIdx == 0xFFFFFFFF) continue; // 无效索引
+
+					for (uint32_t k = startIdx; k < m_SortedEntries.size() && m_SortedEntries[k].Hash == hash; k++) {
+						int j = m_SortedEntries[k].Index;
+						float dist = glm::distance(p.Position, m_Particles[j].Position);
+						if (dist < m_SmoothingRadius) {
+							density += Physics2D::SmoothingKernel(m_SmoothingRadius, dist);
+						}
+					}
+				}
+			}
+			p.Density = density;
+			p.Property = std::max(0.0f, (p.Density - m_TargetDensity)) * m_PressureMultiplier; // P = k * (rho - rho0)
 		}
 
 		// 2. 计算受力并更新速度 (Pressure + Viscosity + Gravity)
-		for (int i = 0; i < m_Particles.size(); i++) {
+		for (int i = 0; i < m_Particles.size(); i++)
+		{
+			auto& p = m_Particles[i];
 			glm::vec2 pressureForce(0.0f);
 			glm::vec2 viscosityForce(0.0f);
 
-			for (int j = 0; j < m_Particles.size(); j++) {
-				if (i == j) continue;
+			int gx = (int)std::floor(p.Position.x * invH);
+			int gy = (int)std::floor(p.Position.y * invH);
 
-				float dist = glm::distance(m_Particles[i].Position, m_Particles[j].Position);
-				if (dist > m_SmoothingRadius || dist < 0.0001f) continue;
+			for (int x = -m_HashGridStep; x <= m_HashGridStep; ++x) {
+				for (int y = -m_HashGridStep; y <= m_HashGridStep; ++y) {
+					uint32_t hash = CalculateHash(gx + x, gy + y);
+					uint32_t startIdx = m_CellStart[hash];
+					if (startIdx == 0xFFFFFFFF) continue; // 无效索引
 
-				glm::vec2 dir = (m_Particles[j].Position - m_Particles[i].Position) / dist;
-				float slope = Physics2D::SmoothingKernelDerivative(m_SmoothingRadius, dist);
+					for (uint32_t k = startIdx; k < m_SortedEntries.size() && m_SortedEntries[k].Hash == hash; k++) {
+						int j = m_SortedEntries[k].Index;
+						if (i == j) continue;
 
-				// 压力项：使用对称公式防止单向加速
-				float sharedPressure = (m_Particles[i].Property + m_Particles[j].Property) / 2.0f;
-				pressureForce += dir * sharedPressure * slope / m_Particles[j].Density;
+						float dist = glm::distance(p.Position, m_Particles[j].Position);
+						if (dist >= m_SmoothingRadius || dist < 1e-5f) continue;
 
-				// 粘性项：拉近速度差
-				viscosityForce += (m_Particles[j].Velocity - m_Particles[i].Velocity) * Physics2D::SmoothingKernel(m_SmoothingRadius, dist, m_Poly6ScalingFactor);
+						glm::vec2 dir = (p.Position - m_Particles[j].Position) / dist;
+						float slope = Physics2D::SmoothingKernelDerivative(m_SmoothingRadius, dist);
+
+						float sharedPressure = (p.Property + m_Particles[j].Property) / 2.0f;
+						pressureForce += dir * sharedPressure * slope / m_Particles[j].Density;
+
+						viscosityForce += (m_Particles[j].Velocity - p.Velocity) * Physics2D::SmoothingKernel(m_SmoothingRadius, dist);
+					}
+				}
 			}
 
 			glm::vec2 acceleration = (pressureForce / m_Particles[i].Density) + (viscosityForce * m_ViscosityStrength);
 			acceleration.y += m_Gravity;
-
-			m_Particles[i].Velocity += acceleration * dt;
+			p.Velocity += acceleration * dt;
 		}
 
 		// 3. 更新位置与边界处理
@@ -159,7 +168,6 @@ namespace Hazel {
 		}
 
 		// --- 渲染部分 ---
-
 		m_Framebuffer->Bind();
 		Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		Renderer::Clear();
@@ -171,9 +179,9 @@ namespace Hazel {
 		}
 
 		for (const auto& p : m_Particles) {
-			// 根据密度改变颜色，方便观察
 			float colorVal = std::clamp(p.Density / m_TargetDensity, 0.5f, 1.5f);
-			Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * colorVal, 0.6f * colorVal, 1.0f, 1.0f });
+			//Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * (2 - colorVal), 0.6f * (2 - colorVal), 1.0f, 1.0f }); // 越蓝密度越高
+			Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * colorVal, 0.6f * colorVal, 1.0f, 1.0f }); // 越白密度越高
 		}
 
 		Renderer2D::EndScene();
@@ -182,7 +190,6 @@ namespace Hazel {
 
 	void FluidSimLayer::OnImGuiRender()
 	{
-		// --- 开启 DockSpace (允许窗口停靠) ---
 		static bool dockspaceOpen = true;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -210,34 +217,34 @@ namespace Hazel {
 		ImGui::Begin("Fluid Settings");
 
 		ImGui::Text("Simulation Parameters");
-		ImGui::DragFloat("Gravity", &m_Gravity, 0.1f, -20.0f, 20.0f);
-		ImGui::DragFloat("Particle Radius", &m_ParticleRadius, 0.01f, 0.05f, 1.0f);
-		ImGui::DragFloat("Collision Damping", &m_CollisionDamping, 0.01f, 0.0f, 1.0f);
+		//ImGui::DragFloat("Gravity", &m_Gravity, 0.1f, -20.0f, 20.0f);
+		ImGui::DragFloat("Particle Radius", &m_ParticleRadius, 0.01f, 0.01f, 2.5f);
+		ImGui::DragFloat("Collision Damping", &m_CollisionDamping, 0.01f, 0.01f, 1.0f);
 
 		ImGui::Separator();
 		ImGui::Text("SPH Parameters");
-		ImGui::DragFloat("SmoothingRadius", &m_SmoothingRadius, 0.01f, 0.1f, 0.5f);
-		ImGui::DragFloat("TargetDensity", &m_TargetDensity, 0.01f, 0.1f, 2.0f);
-		ImGui::DragFloat("PressureMultiplier", &m_PressureMultiplier, 10.0f, 100.0f, 500.0f);
-		ImGui::DragFloat("ViscosityStrength", &m_ViscosityStrength, 0.01f, 0.01f, 0.2f);
+		ImGui::DragFloat("SmoothingRadius", &m_SmoothingRadius, 0.01f, 0.02f, 5.0f);
+		ImGui::DragFloat("TargetDensity", &m_TargetDensity, 0.01f, 0.01f, 20.0f);
+		ImGui::DragFloat("PressureMultiplier", &m_PressureMultiplier, 0.01f, 1.0f, 100.0f);
+		ImGui::DragFloat("ViscosityStrength", &m_ViscosityStrength, 0.01f, 0.01f, 10.0f);
 
 		ImGui::Separator();
 		ImGui::Text("Environment");
-		ImGui::DragFloat("Box Width", &m_BoxWidth, 0.1f, 5.0f, 50.0f);
-		ImGui::DragFloat("Box Height", &m_BoxHeight, 0.1f, 5.0f, 50.0f);
+		ImGui::DragFloat("Box Width", &m_BoxWidth, 0.1f, 0.1f, 50.0f);
+		ImGui::DragFloat("Box Height", &m_BoxHeight, 0.1f, 0.1f, 50.0f);
 
 		ImGui::Separator();
 		ImGui::Text("Obstacle");
 		ImGui::Checkbox("Enable Obstacle", &m_Obstacle.Enabled);
 		ImGui::DragFloat2("Pos", glm::value_ptr(m_Obstacle.Center), 0.1f);
-		ImGui::DragFloat("Radius", &m_Obstacle.Radius, 0.1f, 0.5f, 5.0f);
+		ImGui::DragFloat("Radius", &m_Obstacle.Radius, 0.01f, 0.01f, 5.0f);
 
 		ImGui::Separator();
 		if (ImGui::Button("Reset Simulation")) {
 			ResetParticles();
 		}
-		if (ImGui::Button("Reset Parameters")) {
-			ResetParameter();
+		if (ImGui::Button("Reset All")) {
+			ResetAll();
 		}
 		ImGui::Text("Particle Count: %d", m_ParticleCount);
 		ImGui::End();
@@ -251,9 +258,7 @@ namespace Hazel {
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-		// 将 Framebuffer 的纹理绘制到 ImGui 窗口中
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-		// 注意 UV 坐标，OpenGL 纹理原点在左下角，ImGui 在左上角，需要翻转 Y 轴
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		ImGui::End();
@@ -264,7 +269,6 @@ namespace Hazel {
 
 	void FluidSimLayer::OnEvent(Event& event)
 	{
-		// 如果你想加鼠标平移缩放 2D 相机，可以在这里拦截事件并修改 m_Camera 的投影矩阵
 	}
 
 }
