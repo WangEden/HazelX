@@ -35,8 +35,9 @@ namespace Hazel {
 		void ResetParticles();
 
 		void ResetParameter() {
-			m_ParticleCount = 7000;
+			m_ParticleCount = 2500;
 			m_Gravity = -9.81f;
+			//m_Gravity = 0.0f;
 
 			m_ParticleRadius = 0.08f;
 			m_CollisionDamping = 1.0f;		// 碰撞阻尼，1.0表示弹性碰撞
@@ -44,12 +45,12 @@ namespace Hazel {
 			m_SmoothingRadius = 0.25f;
 			m_TargetDensity = 8.0f;			// 目标密度
 			m_PressureMultiplier = 20.0f;	// 压力系数，值越大越难压缩
-			m_ViscosityStrength = 4.0f;		// 粘性系数，液体的粘稠度，越高液体越粘稠
+			m_ViscosityStrength = 1.5f;		// 粘性系数，液体的粘稠度，越高液体越粘稠
 
-			m_BoxWidth = 25.0;
-			m_BoxHeight = 18.0f;
+			m_BoxWidth = 15.0;
+			m_BoxHeight = 10.0f;
 
-			m_Obstacle.Center = { -2.0f, -5.0f };
+			m_Obstacle.Center = { -2.0f, -3.0f };
 			m_Obstacle.Radius = 1.0f;
 			m_Obstacle.Enabled = true;
 		}
@@ -82,12 +83,14 @@ namespace Hazel {
 				}
 			}
 		}
+		bool OnKeyPressedEvent(KeyPressedEvent& e);
 
 	private:
 		OrthographicCamera m_Camera;
 		Ref<Framebuffer> m_Framebuffer; // 离屏渲染目标
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 		bool m_ViewportFocused = false;
+		bool m_ViewportHovered = false;
 
 		std::vector<Particle2D> m_Particles;
 
@@ -122,6 +125,12 @@ namespace Hazel {
 		std::vector<ParticleEntry> m_SortedEntries; // 存储排序后的条目
 		std::vector<uint32_t> m_CellStart; // 存储每个哈希值在 SortedEntries 中的起始位置
 		const uint32_t m_TableSize = 65536; // 假设哈希表大小为 2^16 = 65536
+
+		bool resume = true;
+
+		float m_InteractionRadius = 4.0f;
+		float m_InteractionStrength = 30.0f;
+		glm::vec2 m_ViewportBounds[2];
 		
 	};
 

@@ -68,124 +68,170 @@ namespace Hazel {
 
 	void FluidSimLayer::OnUpdate(Timestep ts)
 	{
-		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
-			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
-			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		if (resume)
 		{
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+				m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+				(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+			{
+				m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
-			float aspectRatio = m_ViewportSize.x / m_ViewportSize.y;
-			float orthoSize = 10.0f; // 相机视野高度的一半
-			m_Camera.SetProjection(-orthoSize * aspectRatio, orthoSize * aspectRatio, -orthoSize, orthoSize);
-		}
+				float aspectRatio = m_ViewportSize.x / m_ViewportSize.y;
+				float orthoSize = 10.0f; // 相机视野高度的一半
+				m_Camera.SetProjection(-orthoSize * aspectRatio, orthoSize * aspectRatio, -orthoSize, orthoSize);
+			}
 
-		float dt = std::min(ts.GetSeconds(), 0.016f);
-		float invH = 1.0f / m_SmoothingRadius;
+			float dt = std::min(ts.GetSeconds(), 0.016f);
+			float invH = 1.0f / m_SmoothingRadius;
 
-		BuildSpatialHash();
+			BuildSpatialHash();
 
-		// 1. 计算所有粒子的密度和压力
-		for (int i = 0; i < m_Particles.size(); i++)
-		{
-			auto& p = m_Particles[i];
-			float density = 0.0f;
+			// 1. 计算所有粒子的密度和压力
+			for (int i = 0; i < m_Particles.size(); i++)
+			{
+				auto& p = m_Particles[i];
+				float density = 0.0f;
 
-			int gx = (int)std::floor(p.Position.x * invH);
-			int gy = (int)std::floor(p.Position.y * invH);
+				int gx = (int)std::floor(p.Position.x * invH);
+				int gy = (int)std::floor(p.Position.y * invH);
 
-			for (int x = -m_HashGridStep; x <= m_HashGridStep; x++) {
-				for (int y = -m_HashGridStep; y <= m_HashGridStep; y++) {
-					uint32_t hash = CalculateHash(gx + x, gy + y);
-					UINT32 startIdx = m_CellStart[hash];
-					if (startIdx == 0xFFFFFFFF) continue; // 无效索引
+				for (int x = -m_HashGridStep; x <= m_HashGridStep; x++) {
+					for (int y = -m_HashGridStep; y <= m_HashGridStep; y++) {
+						uint32_t hash = CalculateHash(gx + x, gy + y);
+						UINT32 startIdx = m_CellStart[hash];
+						if (startIdx == 0xFFFFFFFF) continue; // 无效索引
 
-					for (uint32_t k = startIdx; k < m_SortedEntries.size() && m_SortedEntries[k].Hash == hash; k++) {
-						int j = m_SortedEntries[k].Index;
-						float dist = glm::distance(p.Position, m_Particles[j].Position);
-						if (dist < m_SmoothingRadius) {
-							density += Physics2D::SmoothingKernel(m_SmoothingRadius, dist);
+						for (uint32_t k = startIdx; k < m_SortedEntries.size() && m_SortedEntries[k].Hash == hash; k++) {
+							int j = m_SortedEntries[k].Index;
+							float dist = glm::distance(p.Position, m_Particles[j].Position);
+							if (dist < m_SmoothingRadius) {
+								density += Physics2D::SmoothingKernel(m_SmoothingRadius, dist);
+							}
 						}
 					}
 				}
+				p.Density = density;
+				p.Property = std::max(0.0f, (p.Density - m_TargetDensity)) * m_PressureMultiplier; // P = k * (rho - rho0)
 			}
-			p.Density = density;
-			p.Property = std::max(0.0f, (p.Density - m_TargetDensity)) * m_PressureMultiplier; // P = k * (rho - rho0)
-		}
 
-		// 2. 计算受力并更新速度 (Pressure + Viscosity + Gravity)
-		for (int i = 0; i < m_Particles.size(); i++)
-		{
-			auto& p = m_Particles[i];
-			glm::vec2 pressureForce(0.0f);
-			glm::vec2 viscosityForce(0.0f);
+			glm::vec2 mouseWorldPos(0.0);
+			bool isLeftPressed = Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_LEFT);
+			bool isRightPressed = Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_RIGHT);
 
-			int gx = (int)std::floor(p.Position.x * invH);
-			int gy = (int)std::floor(p.Position.y * invH);
+			if (isLeftPressed || isRightPressed) {
+				auto [windowX, windowY] = Application::Get().GetWindow().GetWindowPos(); // 窗口在屏幕上的位置
+				auto [mouseX, mouseY] = Input::GetMousePosition(); // 鼠标相对于窗口的位置
+				glm::vec2 viewportScreenPos = m_ViewportBounds[0];
+				float mouseScreenX = windowX + mouseX;
+				float mouseScreenY = windowY + mouseY;
+				float mx = mouseScreenX - viewportScreenPos.x;
+				float my = mouseScreenY - viewportScreenPos.y;
+				float ndcX = (mx / m_ViewportSize.x) * 2.0f - 1.0f;
+				float ndcY = 1.0f - (my / m_ViewportSize.y) * 2.0f; // Y轴反转：屏幕下正，NDC上正
+				glm::mat4 invVP = glm::inverse(m_Camera.GetViewProjectionMatrix());
+				glm::vec4 screenPos = glm::vec4(ndcX, ndcY, 0.0f, 1.0f);
+				glm::vec4 worldPos = invVP * screenPos;
+				mouseWorldPos = { worldPos.x, worldPos.y };
+				//HZ_TRACE("Button Pressed {0}, {1}", worldPos.x, worldPos.y);
+			}
 
-			for (int x = -m_HashGridStep; x <= m_HashGridStep; ++x) {
-				for (int y = -m_HashGridStep; y <= m_HashGridStep; ++y) {
-					uint32_t hash = CalculateHash(gx + x, gy + y);
-					uint32_t startIdx = m_CellStart[hash];
-					if (startIdx == 0xFFFFFFFF) continue; // 无效索引
+			// 2. 计算受力并更新速度 (Pressure + Viscosity + Gravity)
+			for (int i = 0; i < m_Particles.size(); i++)
+			{
+				auto& p = m_Particles[i];
+				glm::vec2 pressureForce(0.0f);
+				glm::vec2 viscosityForce(0.0f);
 
-					for (uint32_t k = startIdx; k < m_SortedEntries.size() && m_SortedEntries[k].Hash == hash; k++) {
-						int j = m_SortedEntries[k].Index;
-						if (i == j) continue;
+				int gx = (int)std::floor(p.Position.x * invH);
+				int gy = (int)std::floor(p.Position.y * invH);
 
-						float dist = glm::distance(p.Position, m_Particles[j].Position);
-						if (dist >= m_SmoothingRadius || dist < 1e-5f) continue;
+				for (int x = -m_HashGridStep; x <= m_HashGridStep; ++x) {
+					for (int y = -m_HashGridStep; y <= m_HashGridStep; ++y) {
+						uint32_t hash = CalculateHash(gx + x, gy + y);
+						uint32_t startIdx = m_CellStart[hash];
+						if (startIdx == 0xFFFFFFFF) continue; // 无效索引
 
-						glm::vec2 dir = (p.Position - m_Particles[j].Position) / dist;
-						float slope = Physics2D::SmoothingKernelDerivative(m_SmoothingRadius, dist);
+						for (uint32_t k = startIdx; k < m_SortedEntries.size() && m_SortedEntries[k].Hash == hash; k++) {
+							int j = m_SortedEntries[k].Index;
+							if (i == j) continue;
 
-						float sharedPressure = (p.Property + m_Particles[j].Property) / 2.0f;
-						pressureForce += dir * sharedPressure * slope / m_Particles[j].Density;
+							float dist = glm::distance(p.Position, m_Particles[j].Position);
+							if (dist >= m_SmoothingRadius || dist < 1e-5f) continue;
 
-						viscosityForce += (m_Particles[j].Velocity - p.Velocity) * Physics2D::SmoothingKernel(m_SmoothingRadius, dist);
+							glm::vec2 dir = (p.Position - m_Particles[j].Position) / dist;
+							float slope = Physics2D::SmoothingKernelDerivative(m_SmoothingRadius, dist);
+
+							float sharedPressure = (p.Property + m_Particles[j].Property) / 2.0f;
+							pressureForce += dir * sharedPressure * slope / m_Particles[j].Density;
+
+							viscosityForce += (m_Particles[j].Velocity - p.Velocity) * Physics2D::SmoothingKernel(m_SmoothingRadius, dist);
+						}
 					}
+				}
+
+				glm::vec2 interactionForce(0.0f);
+				if (isLeftPressed || isRightPressed) {
+					glm::vec2 dir = p.Position - mouseWorldPos;
+					float dist = glm::length(dir);
+					if (dist < m_InteractionRadius && dist > 1e-4f) {
+						float t = 1.0f - (dist / m_InteractionRadius);
+						float influence = t * t; // 二次衰减
+						float dirMultiplier = isLeftPressed ? 1.0f : -1.0f;
+						interactionForce = glm::normalize(dir) * influence * m_InteractionStrength * dirMultiplier;
+					}
+				}
+
+				glm::vec2 acceleration = (pressureForce / p.Density) + (viscosityForce * m_ViscosityStrength) + interactionForce;
+				acceleration.y += m_Gravity;
+
+				p.Velocity += acceleration * dt;
+
+				float maxVel = 100.0f;
+				if (glm::length(p.Velocity) > maxVel)
+					p.Velocity = glm::normalize(p.Velocity) * maxVel;
+
+			}
+
+			// 3. 更新位置与边界处理
+			for (auto& p : m_Particles) {
+				p.Position += p.Velocity * dt;
+				Physics2D::ResolveBoundaryCollision(
+					p.Position, p.Velocity, m_ParticleRadius,
+					{ -m_BoxWidth / 2.0f, -m_BoxHeight / 2.0f },
+					{ m_BoxWidth / 2.0f, m_BoxHeight / 2.0f }, m_CollisionDamping);
+
+				if (m_Obstacle.Enabled) {
+					Physics2D::ResolveCircleCollision(
+						p.Position, p.Velocity, m_ParticleRadius,
+						m_Obstacle.Center, m_Obstacle.Radius, m_CollisionDamping
+					);
 				}
 			}
 
-			glm::vec2 acceleration = (pressureForce / m_Particles[i].Density) + (viscosityForce * m_ViscosityStrength);
-			acceleration.y += m_Gravity;
-			p.Velocity += acceleration * dt;
-		}
-
-		// 3. 更新位置与边界处理
-		for (auto& p : m_Particles) {
-			p.Position += p.Velocity * dt;
-			Physics2D::ResolveBoundaryCollision(
-				p.Position, p.Velocity, m_ParticleRadius,
-				{ -m_BoxWidth / 2.0f, -m_BoxHeight / 2.0f },
-				{ m_BoxWidth / 2.0f, m_BoxHeight / 2.0f }, m_CollisionDamping);
+			// --- 渲染部分 ---
+			m_Framebuffer->Bind();
+			Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			Renderer::Clear();
+			Renderer2D::BeginScene(m_Camera.GetViewProjectionMatrix());
+			Renderer2D::DrawQuad({ 0.0f, 0.0f }, { m_BoxWidth, m_BoxHeight }, { 0.3f, 0.3f, 0.3f, 0.5f });
 
 			if (m_Obstacle.Enabled) {
-				Physics2D::ResolveCircleCollision(
-					p.Position, p.Velocity, m_ParticleRadius,
-					m_Obstacle.Center, m_Obstacle.Radius, m_CollisionDamping
-				);
+				Renderer2D::DrawCircle(m_Obstacle.Center, m_Obstacle.Radius, { 0.8f, 0.2f, 0.2f, 1.0f });
 			}
+
+			if (isLeftPressed || isRightPressed) {
+				Renderer2D::DrawCircle(mouseWorldPos, m_InteractionRadius / 4, { 0.2f, 0.3f, 0.5f, 0.7f });
+			}
+
+			for (const auto& p : m_Particles) {
+				float colorVal = std::clamp(p.Density / m_TargetDensity, 0.5f, 1.5f);
+				//Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * (2 - colorVal), 0.6f * (2 - colorVal), 1.0f, 1.0f }); // 越蓝密度越高
+				Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * colorVal, 0.6f * colorVal, 1.0f, 1.0f }); // 越白密度越高
+			}
+
+			Renderer2D::EndScene();
+			m_Framebuffer->Unbind();
 		}
-
-		// --- 渲染部分 ---
-		m_Framebuffer->Bind();
-		Renderer::SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		Renderer::Clear();
-		Renderer2D::BeginScene(m_Camera.GetViewProjectionMatrix());
-		Renderer2D::DrawQuad({ 0.0f, 0.0f }, { m_BoxWidth, m_BoxHeight }, { 0.3f, 0.3f, 0.3f, 0.5f });
-
-		if (m_Obstacle.Enabled) {
-			Renderer2D::DrawCircle(m_Obstacle.Center, m_Obstacle.Radius, { 0.8f, 0.2f, 0.2f, 1.0f });
-		}
-
-		for (const auto& p : m_Particles) {
-			float colorVal = std::clamp(p.Density / m_TargetDensity, 0.5f, 1.5f);
-			//Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * (2 - colorVal), 0.6f * (2 - colorVal), 1.0f, 1.0f }); // 越蓝密度越高
-			Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * colorVal, 0.6f * colorVal, 1.0f, 1.0f }); // 越白密度越高
-		}
-
-		Renderer2D::EndScene();
-		m_Framebuffer->Unbind();
 	}
 
 	void FluidSimLayer::OnImGuiRender()
@@ -217,7 +263,7 @@ namespace Hazel {
 		ImGui::Begin("Fluid Settings");
 
 		ImGui::Text("Simulation Parameters");
-		//ImGui::DragFloat("Gravity", &m_Gravity, 0.1f, -20.0f, 20.0f);
+		ImGui::DragFloat("Gravity", &m_Gravity, 0.1f, -10.0f, 10.0f);
 		ImGui::DragFloat("Particle Radius", &m_ParticleRadius, 0.01f, 0.01f, 2.5f);
 		ImGui::DragFloat("Collision Damping", &m_CollisionDamping, 0.01f, 0.01f, 1.0f);
 
@@ -253,7 +299,15 @@ namespace Hazel {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 		ImGui::Begin("Viewport");
 
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetWindowPos();
+
+		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
+		m_ViewportHovered = ImGui::IsWindowHovered();
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -269,6 +323,19 @@ namespace Hazel {
 
 	void FluidSimLayer::OnEvent(Event& event)
 	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(FluidSimLayer::OnKeyPressedEvent));
+	}
+
+	bool FluidSimLayer::OnKeyPressedEvent(KeyPressedEvent& e)
+	{
+		switch (e.GetKeyCode())
+		{
+		case HZ_KEY_SPACE:
+			resume = !resume;
+			break;
+		}
+		return false;
 	}
 
 }

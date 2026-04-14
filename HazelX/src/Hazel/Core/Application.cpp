@@ -77,7 +77,7 @@ namespace Hazel {
 		OnInit();
 		while (m_Running)
 		{
-			HZ_CORE_TRACE("Frame Time: {0}ms", m_TimeStep.GetMilliseconds());
+			//HZ_CORE_TRACE("Frame Time: {0}ms", m_TimeStep.GetMilliseconds());
 
 			if (!m_Minimized)
 			{
