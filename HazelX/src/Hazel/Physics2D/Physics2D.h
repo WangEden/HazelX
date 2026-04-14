@@ -86,17 +86,34 @@ namespace Hazel {
 		static glm::vec2 CalculateGradient(const Particle2D& sampleParticle, const std::vector<Particle2D>& particles,
 			float smoothingRadius, float poly6ScalingFactor)
 		{
-			const float stepSize = 0.001f; // 用于数值微分的步长
+			glm::vec2 gradient(0.0f);
+			const float mass = 1.0f;
 
-			Particle2D samplePointChange = sampleParticle;
-			samplePointChange.Position.x += stepSize;
-			samplePointChange.Position.y += stepSize;
+			for (const Particle2D& particle : particles)
+			{
+				float dst = glm::distance(sampleParticle.Position, particle.Position);
 
-			float deltaX = CalculateProperty(samplePointChange, particles, smoothingRadius, poly6ScalingFactor) - CalculateProperty(sampleParticle, particles, smoothingRadius, poly6ScalingFactor);
-			float deltaY = CalculateProperty(samplePointChange, particles, smoothingRadius, poly6ScalingFactor) - CalculateProperty(sampleParticle, particles, smoothingRadius, poly6ScalingFactor);
+				// 距离过远或重叠则跳过（避免除零）
+				if (dst >= smoothingRadius || dst < 0.0001f) continue;
 
-			return glm::vec2(deltaX / stepSize, deltaY / stepSize);
+				// 1. 计算核函数导数的大小（标量）
+				float slope = SmoothingKernelDerivative(smoothingRadius, dst);
+
+				// 2. 计算方向向量（从邻居指向采样点，即梯度上升方向）
+				glm::vec2 dir = (sampleParticle.Position - particle.Position) / dst;
+
+				// 3. 累加贡献：(属性 / 密度) * 核函数梯度向量
+				// 注意：这里 sampleParticle.Property 是 A_j，通常在压力计算中，
+				// 我们会使用对称形式来保证动量守恒，但标准的场梯度如下：
+				gradient += (particle.Property * mass / particle.Density) * (dir * slope);
+			}
+
+			return gradient;
 		}
+
+		// 计算和圆形障碍物碰撞的效果
+		static void ResolveCircleCollision(glm::vec2& position, glm::vec2& velocity, float pRadius,
+			const glm::vec2& circleCenter, float circleRadius, float damping);
 
 	};
 

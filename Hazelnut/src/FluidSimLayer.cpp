@@ -67,7 +67,7 @@ namespace Hazel {
 	void FluidSimLayer::ResetParameter()
 	{
 		// 基础物理常数
-		m_ParticleCount = 1000;
+		m_ParticleCount = PARTICLE_COUNT;
 		m_Gravity = -9.81f;
 		m_ParticleRadius = 0.08f;
 		m_CollisionDamping = 0.5f;
@@ -84,7 +84,6 @@ namespace Hazel {
 
 		// 核心：必须重新计算与半径相关的缩放因子
 		UpdateScalingFactors();
-
 		ResetParticles();
 	}
 
@@ -150,6 +149,13 @@ namespace Hazel {
 				p.Position, p.Velocity, m_ParticleRadius,
 				{ -m_BoxWidth / 2.0f, -m_BoxHeight / 2.0f },
 				{ m_BoxWidth / 2.0f, m_BoxHeight / 2.0f }, m_CollisionDamping);
+
+			if (m_Obstacle.Enabled) {
+				Physics2D::ResolveCircleCollision(
+					p.Position, p.Velocity, m_ParticleRadius,
+					m_Obstacle.Center, m_Obstacle.Radius, m_CollisionDamping
+				);
+			}
 		}
 
 		// --- 渲染部分 ---
@@ -159,6 +165,10 @@ namespace Hazel {
 		Renderer::Clear();
 		Renderer2D::BeginScene(m_Camera.GetViewProjectionMatrix());
 		Renderer2D::DrawQuad({ 0.0f, 0.0f }, { m_BoxWidth, m_BoxHeight }, { 0.3f, 0.3f, 0.3f, 0.5f });
+
+		if (m_Obstacle.Enabled) {
+			Renderer2D::DrawCircle(m_Obstacle.Center, m_Obstacle.Radius, { 0.8f, 0.2f, 0.2f, 1.0f });
+		}
 
 		for (const auto& p : m_Particles) {
 			// 根据密度改变颜色，方便观察
@@ -215,6 +225,12 @@ namespace Hazel {
 		ImGui::Text("Environment");
 		ImGui::DragFloat("Box Width", &m_BoxWidth, 0.1f, 5.0f, 50.0f);
 		ImGui::DragFloat("Box Height", &m_BoxHeight, 0.1f, 5.0f, 50.0f);
+
+		ImGui::Separator();
+		ImGui::Text("Obstacle");
+		ImGui::Checkbox("Enable Obstacle", &m_Obstacle.Enabled);
+		ImGui::DragFloat2("Pos", glm::value_ptr(m_Obstacle.Center), 0.1f);
+		ImGui::DragFloat("Radius", &m_Obstacle.Radius, 0.1f, 0.5f, 5.0f);
 
 		ImGui::Separator();
 		if (ImGui::Button("Reset Simulation")) {

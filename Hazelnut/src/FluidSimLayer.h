@@ -43,7 +43,9 @@ namespace Hazel {
 		// --- 流体物理数据 ---
 		std::vector<Particle2D> m_Particles;
 
-		int m_ParticleCount = 1000;
+		const int PARTICLE_COUNT = 1000;
+
+		int m_ParticleCount = PARTICLE_COUNT;
 		float m_Gravity = -9.81f;
 		float m_ParticleRadius = 0.08f;
 		float m_CollisionDamping = 0.5f;
@@ -65,6 +67,13 @@ namespace Hazel {
 
 			// 如果你用了 Spiky Kernel，也要在这里更新它的系数
 		}
+
+		struct Obstacle {
+			glm::vec2 Center = { 0.0f, -2.0f };
+			float Radius = 1.0f;
+			bool Enabled = true;
+		};
+		Obstacle m_Obstacle;
 	};
 
 }
