@@ -27,13 +27,13 @@ namespace Hazel {
 
 		m_Window = std::unique_ptr<Window>(Window::Create(WindowProps(props.Name, props.WindowWidth, props.WindowHeight)));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent)); // 将事件回调函数绑定到窗口事件系统中，这样当窗口事件发生时就会调用Application的OnEvent方法
-		m_Window->SetVSync(false);
+		m_Window->SetVSync(true);
 
 		m_ImGuiLayer = new ImGuiLayer("ImGui");
 		PushOverlay(m_ImGuiLayer);
 
 		Renderer::Init();
-		Renderer::Get().WaitAndRender();
+		Renderer::WaitAndRender();
 	}
 
 	Application::~Application()
@@ -84,7 +84,7 @@ namespace Hazel {
 				Application* app = this;
 				Renderer::Submit([app]() { app->RenderImGui(); });
 
-				Renderer::Get().WaitAndRender();
+				Renderer::WaitAndRender();
 				// 渲染解耦，此处只负责渲染，提交渲染命令由HZ_RENDER宏完成，
 				// HZ_RENDER宏会调用Renderer::Submit()将渲染命令提交到Renderer的命令队列中，
 				// 然后Renderer::WaitAndRender()会依次执行队列中的渲染命令；

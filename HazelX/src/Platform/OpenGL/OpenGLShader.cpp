@@ -45,16 +45,20 @@ namespace Hazel {
 	void OpenGLShader::Load(const std::string & source)
 	{
 		m_ShaderSource = PreProcess(source);
-		Parse();
+		if (!m_IsCompute)
+			Parse();
 
-		Renderer::Submit([this]()
+		Renderer::Submit([=]()
 		{
 			if (m_RendererID)
-				glDeleteShader(m_RendererID);
+				glDeleteProgram(m_RendererID);
 
 			CompileAndUploadShader();
-			ResolveUniforms();
-			ValidateUniforms();
+			if (!m_IsCompute)
+			{
+				ResolveUniforms();
+				ValidateUniforms();
+			}
 
 			if (m_Loaded)
 			{
@@ -73,7 +77,7 @@ namespace Hazel {
 
 	void OpenGLShader::Bind()
 	{
-		Renderer::Submit([this]() {
+		Renderer::Submit([=]() {
 			glUseProgram(m_RendererID);
 		});
 	}
@@ -92,7 +96,7 @@ namespace Hazel {
 		}
 		else
 		{
-			HZ_CORE_WARN("Could not read shader file {0}", filepath);
+			HZ_CORE_ASSERT(false, "Could not load shader!");
 		}
 
 		return result;
@@ -111,11 +115,19 @@ namespace Hazel {
 			HZ_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			HZ_CORE_ASSERT(type == "vertex" || type == "fragment" || type == "pixel", "Invalid shader type specified");
+			HZ_CORE_ASSERT(type == "vertex" || type == "fragment" || type == "pixel" || type == "compute", "Invalid shader type specified");
 
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
 			pos = source.find(typeToken, nextLinePos);
-			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+			auto shaderType = ShaderTypeFromString(type);
+			shaderSources[shaderType] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+
+			// Compute shaders cannot contain other types
+			if (shaderType == GL_COMPUTE_SHADER)
+			{
+				m_IsCompute = true;
+				break;
+			}
 		}
 
 		return shaderSources;
@@ -246,6 +258,7 @@ namespace Hazel {
 	static bool IsTypeStringResource(const std::string& type)
 	{
 		if (type == "sampler2D")		return true;
+		if (type == "sampler2DMS")		return true;
 		if (type == "samplerCube")		return true;
 		if (type == "sampler2DShadow")	return true;
 		return false;
@@ -522,6 +535,8 @@ namespace Hazel {
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel")
 			return GL_FRAGMENT_SHADER;
+		if (type == "compute")
+			return GL_COMPUTE_SHADER;
 
 		return GL_NONE;
 	}
@@ -780,6 +795,13 @@ namespace Hazel {
 		});
 	}
 
+	void OpenGLShader::SetInt(const std::string& name, int value)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformInt(name, value);
+			});
+	}
+
 	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
 	{
 		Renderer::Submit([=]() {
@@ -799,6 +821,13 @@ namespace Hazel {
 			if (location != -1)
 				UploadUniformMat4(location, value);
 		}
+	}
+
+	void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t size)
+	{
+		Renderer::Submit([=]() {
+			UploadUniformIntArray(name, values, size);
+		});
 	}
 
 	void OpenGLShader::UploadUniformInt(uint32_t location, int32_t value)
@@ -864,7 +893,7 @@ namespace Hazel {
 		glUniform1i(location, value);
 	}
 
-	void OpenGLShader::UploadUniformIntArray(const std::string& name, int32_t* values, int32_t count)
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, int32_t* values, uint32_t count)
 	{
 		int32_t location = GetUniformLocation(name);
 		glUniform1iv(location, count, values);

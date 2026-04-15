@@ -1,50 +1,43 @@
 ﻿#include "hzpch.h"
-#include "WindowsInput.h"
+#include "Hazel/Core/Input.h"
+#include "WindowsWindow.h"
 
 #include "Hazel/Core/Application.h"
-#include <GLFW/glfw3.h>
 
 namespace Hazel {
-	Input* Input::s_Instance = new WindowsInput();
 
-	bool WindowsInput::IsKeyPressedImpl(int keycode)
+	bool Input::IsKeyPressed(int keycode)
 	{
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, keycode);
+		auto& window = static_cast<WindowsWindow&>(Application::Get().GetWindow());
+		auto state = glfwGetKey(static_cast<GLFWwindow*>(window.GetNativeWindow()), keycode);
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(int button)
+	bool Input::IsMouseButtonPressed(int button)
 	{
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, button);
+		auto& window = static_cast<WindowsWindow&>(Application::Get().GetWindow());
+
+		auto state = glfwGetMouseButton(static_cast<GLFWwindow*>(window.GetNativeWindow()), button);
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	float Input::GetMouseX()
 	{
-		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		//return std::pair<float, float>(xpos, ypos);
-		return { (float)xpos, (float)ypos };
+		auto [x, y] = GetMousePosition();
+		return (float)x;
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float Input::GetMouseY()
 	{
-		auto [x, y] = GetMousePositionImpl(); // C++17特有，否则得用get<0>()
-		return x;
+		auto [x, y] = GetMousePosition();
+		return (float)y;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	std::pair<float, float> Input::GetMousePosition()
 	{
-		auto [x, y] = GetMousePositionImpl(); // C++17特有，否则得用get<0>()
-		return y;
+		auto& window = static_cast<WindowsWindow&>(Application::Get().GetWindow());
+		double x, y;
+		glfwGetCursorPos(static_cast<GLFWwindow*>(window.GetNativeWindow()), &x, &y);
+		return { (float)x, (float)y };
 	}
-
-	//float WindowsInput::GetMouseScrollYImpl()
-	//{
-	//	auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-
-	//}
 }

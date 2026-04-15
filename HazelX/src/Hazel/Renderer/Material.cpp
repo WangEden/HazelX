@@ -19,6 +19,9 @@ namespace Hazel {
 	{
 		m_Shader->AddShaderReloadedCallback(std::bind(&Material::OnShaderReloaded, this));
 		AllocateStorage();
+
+		m_MaterialFlags |= (uint32_t)MaterialFlag::DepthTest;
+		m_MaterialFlags |= (uint32_t)MaterialFlag::Blend;
 	}
 
 	Material::~Material()
@@ -27,17 +30,24 @@ namespace Hazel {
 
 	void Material::AllocateStorage()
 	{
-		const auto& vsBuffer = m_Shader->GetVSMaterialUniformBuffer();
-		m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
-		m_VSUniformStorageBuffer.ZeroInitialize();
+		if (m_Shader->HasVSMaterialUniformBuffer())
+		{
+			const auto& vsBuffer = m_Shader->GetVSMaterialUniformBuffer();
+			m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
+			m_VSUniformStorageBuffer.ZeroInitialize();
+		}
 
-		const auto& psBuffer = m_Shader->GetPSMaterialUniformBuffer();
-		m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
-		m_PSUniformStorageBuffer.ZeroInitialize();
+		if (m_Shader->HasPSMaterialUniformBuffer())
+		{
+			const auto& psBuffer = m_Shader->GetPSMaterialUniformBuffer();
+			m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
+			m_PSUniformStorageBuffer.ZeroInitialize();
+		}
 	}
 
 	void Material::OnShaderReloaded()
 	{
+		return;
 		AllocateStorage();
 
 		for (auto mi : m_MaterialInstances)
@@ -143,13 +153,31 @@ namespace Hazel {
 
 	void MaterialInstance::AllocateStorage()
 	{
-		const auto& vsBuffer = m_Material->m_Shader->GetVSMaterialUniformBuffer();
-		m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
-		memcpy(m_VSUniformStorageBuffer.Data, m_Material->m_VSUniformStorageBuffer.Data, vsBuffer.GetSize());
+		if (m_Material->m_Shader->HasVSMaterialUniformBuffer())
+		{
+			const auto& vsBuffer = m_Material->m_Shader->GetVSMaterialUniformBuffer();
+			m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
+			memcpy(m_VSUniformStorageBuffer.Data, m_Material->m_VSUniformStorageBuffer.Data, vsBuffer.GetSize());
+		}
 
-		const auto& psBuffer = m_Material->m_Shader->GetPSMaterialUniformBuffer();
-		m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
-		memcpy(m_PSUniformStorageBuffer.Data, m_Material->m_PSUniformStorageBuffer.Data, psBuffer.GetSize());
+		if (m_Material->m_Shader->HasPSMaterialUniformBuffer())
+		{
+			const auto& psBuffer = m_Material->m_Shader->GetPSMaterialUniformBuffer();
+			m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
+			memcpy(m_PSUniformStorageBuffer.Data, m_Material->m_PSUniformStorageBuffer.Data, psBuffer.GetSize());
+		}
+	}
+
+	void MaterialInstance::SetFlag(MaterialFlag flag, bool value)
+	{
+		if (value)
+		{
+			m_Material->m_MaterialFlags |= (uint32_t)flag;
+		}
+		else
+		{
+			m_Material->m_MaterialFlags &= ~(uint32_t)flag;
+		}
 	}
 
 	void MaterialInstance::OnMaterialValueUpdated(ShaderUniformDeclaration* decl)

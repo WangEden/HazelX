@@ -32,6 +32,9 @@
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
 
+#include "Hazel/Core/Input.h"
+#include "Hazel/Core/KeyCodes.h"
+
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <malloc.h>
 #endif
@@ -740,7 +743,7 @@ namespace ImGuizmo
         OPERATION mOperation = OPERATION(-1);
 
         bool mAllowAxisFlip = true;
-        float mGizmoSizeClipSpace = 0.1f;
+        float mGizmoSizeClipSpace = 0.15f;
     };
 
     static Context gContext;
@@ -1450,6 +1453,10 @@ namespace ImGuizmo
 
     static bool CanActivate()
     {
+        // Check for modifiers
+        if (Hazel::Input::IsKeyPressed(HZ_KEY_LEFT_ALT) || Hazel::Input::IsKeyPressed(HZ_KEY_LEFT_SHIFT) || Hazel::Input::IsKeyPressed(HZ_KEY_LEFT_CONTROL))
+            return false;
+
         if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered() && !ImGui::IsAnyItemActive())
         {
             return true;

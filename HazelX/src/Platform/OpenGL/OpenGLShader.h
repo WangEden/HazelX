@@ -18,6 +18,7 @@ namespace Hazel {
 		virtual void AddShaderReloadedCallback(const ShaderReloadedCallback& callback) override;
 
 		virtual void Bind() override;
+		virtual RendererID GetRendererID() const override { return m_RendererID; }
 
 		virtual void UploadUniformBuffer(const UniformBufferBase& uniformBuffer) override;
 
@@ -25,8 +26,11 @@ namespace Hazel {
 		virtual void SetPSMaterialUniformBuffer(Buffer buffer) override;
 
 		virtual void SetFloat(const std::string& name, float value) override;
+		virtual void SetInt(const std::string& name, int value) override;
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) override;
 		virtual void SetMat4FromRenderThread(const std::string& name, const glm::mat4& value, bool bind = true) override;
+
+		virtual void SetIntArray(const std::string& name, int* values, uint32_t size) override;
 
 		virtual const std::string& GetName() const override { return m_Name; }
 		void Load(const std::string& source);
@@ -63,7 +67,7 @@ namespace Hazel {
 		void UploadUniformStruct(OpenGLShaderUniformDeclaration* uniform, byte* buffer, uint32_t offset);
 
 		void UploadUniformInt(const std::string& name, int32_t value);
-		void UploadUniformIntArray(const std::string& name, int32_t* values, int32_t count);
+		void UploadUniformIntArray(const std::string& name, int32_t* values, uint32_t count);
 
 		void UploadUniformFloat(const std::string& name, float value);
 		void UploadUniformFloat2(const std::string& name, float* values);
@@ -72,14 +76,16 @@ namespace Hazel {
 
 		void UploadUniformMat4(const std::string& name, const glm::mat4& values);
 
-		inline const ShaderUniformBufferList& GetVSRendererUniforms() const override { return m_VSRendererUniformBuffers; }
-		inline const ShaderUniformBufferList& GetPSRendererUniforms() const override { return m_PSRendererUniformBuffers; }
-		inline const ShaderUniformBufferDeclaration& GetVSMaterialUniformBuffer() const override { return *m_VSMaterialUniformBuffer; }
-		inline const ShaderUniformBufferDeclaration& GetPSMaterialUniformBuffer() const override { return *m_PSMaterialUniformBuffer; }
-		inline const ShaderResourceList& GetResources() const override { return m_Resources; }
-	private:
+		virtual const ShaderUniformBufferList& GetVSRendererUniforms() const override { return m_VSRendererUniformBuffers; }
+		virtual const ShaderUniformBufferList& GetPSRendererUniforms() const override { return m_PSRendererUniformBuffers; }
+		virtual bool HasVSMaterialUniformBuffer() const override { return (bool)m_VSMaterialUniformBuffer; }
+		virtual bool HasPSMaterialUniformBuffer() const override { return (bool)m_PSMaterialUniformBuffer; }
+		virtual const ShaderUniformBufferDeclaration& GetVSMaterialUniformBuffer() const override { return *m_VSMaterialUniformBuffer; }
+		virtual const ShaderUniformBufferDeclaration& GetPSMaterialUniformBuffer() const override { return *m_PSMaterialUniformBuffer; }
+		virtual const ShaderResourceList& GetResources() const override { return m_Resources; }
 		RendererID m_RendererID;
 		bool m_Loaded = false;
+		bool m_IsCompute = false;
 
 		std::string m_Name, m_AssetPath;
 		std::unordered_map<GLenum, std::string> m_ShaderSource;
