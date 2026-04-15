@@ -219,14 +219,14 @@ namespace Hazel {
 				Renderer2D::DrawCircle(m_Obstacle.Center, m_Obstacle.Radius, { 0.8f, 0.2f, 0.2f, 1.0f });
 			}
 
-			if (isLeftPressed || isRightPressed) {
-				Renderer2D::DrawCircle(mouseWorldPos, m_InteractionRadius / 4, { 0.2f, 0.3f, 0.5f, 0.7f });
-			}
-
 			for (const auto& p : m_Particles) {
 				float colorVal = std::clamp(p.Density / m_TargetDensity, 0.5f, 1.5f);
 				//Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * (2 - colorVal), 0.6f * (2 - colorVal), 1.0f, 1.0f }); // 越蓝密度越高
 				Renderer2D::DrawCircle(p.Position, m_ParticleRadius, { 0.2f * colorVal, 0.6f * colorVal, 1.0f, 1.0f }); // 越白密度越高
+			}
+
+			if (isLeftPressed || isRightPressed) {
+				Renderer2D::DrawCircle(mouseWorldPos, m_InteractionRadius / 4, { 0.2f, 0.3f, 0.5f, 0.7f });
 			}
 
 			Renderer2D::EndScene();
@@ -263,7 +263,7 @@ namespace Hazel {
 		ImGui::Begin("Fluid Settings");
 
 		ImGui::Text("Simulation Parameters");
-		ImGui::DragFloat("Gravity", &m_Gravity, 0.1f, -10.0f, 10.0f);
+		ImGui::DragFloat("Gravity", &m_Gravity, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat("Particle Radius", &m_ParticleRadius, 0.01f, 0.01f, 2.5f);
 		ImGui::DragFloat("Collision Damping", &m_CollisionDamping, 0.01f, 0.01f, 1.0f);
 

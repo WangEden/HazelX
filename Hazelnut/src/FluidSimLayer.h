@@ -35,7 +35,7 @@ namespace Hazel {
 		void ResetParticles();
 
 		void ResetParameter() {
-			m_ParticleCount = 2500;
+			m_ParticleCount = 3000;
 			m_Gravity = -9.81f;
 			//m_Gravity = 0.0f;
 
