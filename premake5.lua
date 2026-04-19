@@ -21,11 +21,20 @@ workspace "HazelX"
     IncludeDir["Glad"] = "HazelX/vendor/Glad/include"
     IncludeDir["ImGui"] = "HazelX/vendor/imgui"
     IncludeDir["GLM"] = "HazelX/vendor/glm"
+    IncludeDir["entt"] = "HazelX/Vendor/entt/include"
+    IncludeDir["FastNoise"] = "HazelX/vendor/FastNoise"
+    IncludeDir["mono"] = "HazelX/vendor/mono/include"
 
+    LibraryDir = {}
+    LibraryDir["mono"] = "vendor/mono/lib/Debug/mono-2.0-sgen.lib"
+
+group "Denpendencies"
     include "HazelX/vendor/GLFW" -- 链接到GLFW子模块中的premake5.lua
     include "HazelX/vendor/Glad"
     include "HazelX/vendor/imgui"
+group ""
 
+group "Core"
 project "HazelX"
     location "HazelX"
     kind "StaticLib"
@@ -40,8 +49,6 @@ project "HazelX"
         pchheader "hzpch.h"
         pchsource "HazelX/src/hzpch.cpp"
 
-    -- filter "system:macosx"
-    -- filter "" -- 重置过滤
 
     files
     {
@@ -52,6 +59,10 @@ project "HazelX"
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
         "%{prj.name}/vendor/stb",
+
+        "%{prj.name}/vendor/yaml-cpp/include/**.h",
+        "%{prj.name}/vendor/yaml-cpp/src/**.cpp",
+        "%{prj.name}/vendor/yaml-cpp/src/**.h",
     }
 
     defines
@@ -61,12 +72,16 @@ project "HazelX"
 
     externalincludedirs
     {
+        "%{prj.name}/vendor/spdlog/include",
+        "%{prj.name}/vendor/assimp/include",
+        "%{prj.name}/vendor/yaml-cpp/include",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.GLM}",
-        "%{prj.name}/vendor/spdlog/include",
-        "%{prj.name}/vendor/assimp/include",
+        "%{IncludeDir.entt}",
+		"%{IncludeDir.mono}",
+		"%{IncludeDir.FastNoise}",
     }
 
     includedirs
@@ -82,16 +97,23 @@ project "HazelX"
         "ImGui",
     }
 
+    filter "files:HazelX/vendor/yaml-cpp/src/**.cpp"
+        buildoptions { "/Y-" }
+
     filter "system:windows"
         systemversion "latest"
-        links { "opengl32.lib" }
+        links 
+        { 
+            "opengl32.lib",
+            "%{LibraryDir.mono}",
+        }
 
         defines
         {
             "HZ_PLATFORM_WINDOWS",
-            "HZ_BUILD_DLL",
+            -- "HZ_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
-            "_WINDLL"
+            "YAML_CPP_STATIC_DEFINE",
         }
 
     filter "system:macosx"
@@ -124,7 +146,22 @@ project "HazelX"
         defines "HZ_DIST"
         runtime "Release"
         optimize "on"
+    
+project "Hazel-ScriptCore"
+	location "Hazel-ScriptCore"
+	kind "SharedLib"
+	language "C#"
 
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files 
+	{
+		"%{prj.name}/src/**.cs", 
+	}
+group ""
+
+group "Tools"
 project "Hazelnut"
     location "Hazelnut"
     kind "ConsoleApp"
@@ -146,11 +183,13 @@ project "Hazelnut"
         "HazelX/vendor/spdlog/include",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.Glad}",
+        "%{IncludeDir.entt}",
         "HazelX/vendor"
     }
 
     includedirs
     {
+        "%{prj.name}/src",
         "HazelX/src"
     }
 
@@ -159,49 +198,123 @@ project "Hazelnut"
         "HazelX"
     }
 
-    filter "system:windows"
+    filter { "system:windows", "configurations:Debug" }
         systemversion "latest"
+        runtime "Debug"
+        symbols "on"
 
         defines
         {
+            "HZ_DEBUG",
             "HZ_PLATFORM_WINDOWS"
         }
 
         postbuildcommands 
         {
             ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\"")
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
+
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Debug/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Debug/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
         }
-
-    filter "system:macosx"
-        defines { "HZ_PLATFORM_MACOS" }
-
-    filter "configurations:Debug"
-        defines "HZ_DEBUG"
-        runtime "Debug"
-        symbols "on"
 
         links
         {
 			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
         }
 
-    filter "configurations:Release"
-        defines "HZ_RELEASE"    
+    filter { "system:windows", "configurations:Release" }
+        systemversion "latest"
         runtime "Release"
         optimize "on"
+
+        defines 
+        {
+            "HZ_RELEASE",
+            "HZ_PLATFORM_WINDOWS"
+        }
+
+        postbuildcommands 
+        {
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
+
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
+        }
+        
+        links
+		{
+			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+		}
+
+    filter { "system:windows", "configurations:Dist" }
+        systemversion "latest"
+        runtime "Release"
+        optimize "on"
+
+        defines 
+        {
+            "HZ_DIST",
+            "HZ_PLATFORM_WINDOWS"
+        }
+
+        postbuildcommands 
+        {
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
+
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
+        }
 
         links
 		{
 			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
 		}
 
-    filter "configurations:Dist"
-        defines "HZ_DIST"
-        runtime "Release"
-        optimize "on"
+    filter "system:macosx"
+        defines { "HZ_PLATFORM_MACOS" }
+group ""
 
-        links
-		{
-			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
-		}
+workspace "Sandbox"
+    architecture "x64"
+    targetdir "build"
+
+    configurations
+    {
+        "Debug",
+        "Release",
+        "Dist"
+    }
+
+project "Hazel-ScriptCore"
+	location "Hazel-ScriptCore"
+	kind "SharedLib"
+	language "C#"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files 
+	{
+		"%{prj.name}/src/**.cs", 
+	}
+
+project "ExampleApp"
+	location "ExampleApp"
+	kind "SharedLib"
+	language "C#"
+
+	targetdir ("Hazelnut/assets/scripts")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files 
+	{
+		"%{prj.name}/src/**.cs", 
+	}
+
+	links
+	{
+		"Hazel-ScriptCore"
+	}

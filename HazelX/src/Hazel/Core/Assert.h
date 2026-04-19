@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+//#define HZ_DEBUG
+
 #ifdef HZ_DEBUG
 #define HZ_ENABLE_ASSERTS
 #endif

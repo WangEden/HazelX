@@ -58,28 +58,28 @@
     <IntDir>$(ProjectDir)..\bin-int\Debug-windows-x86_64\HazelX\</IntDir>
     <TargetName>HazelX</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExternalIncludePath>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\spdlog\include;vendor\assimp\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>vendor\spdlog\include;vendor\assimp\include;vendor\yaml-cpp\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;Vendor\entt\include;vendor\mono\include;vendor\FastNoise;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)..\bin\Release-windows-x86_64\HazelX\</OutDir>
     <IntDir>$(ProjectDir)..\bin-int\Release-windows-x86_64\HazelX\</IntDir>
     <TargetName>HazelX</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExternalIncludePath>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\spdlog\include;vendor\assimp\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>vendor\spdlog\include;vendor\assimp\include;vendor\yaml-cpp\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;Vendor\entt\include;vendor\mono\include;vendor\FastNoise;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <OutDir>$(ProjectDir)..\bin\Dist-windows-x86_64\HazelX\</OutDir>
     <IntDir>$(ProjectDir)..\bin-int\Dist-windows-x86_64\HazelX\</IntDir>
     <TargetName>HazelX</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExternalIncludePath>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\spdlog\include;vendor\assimp\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>vendor\spdlog\include;vendor\assimp\include;vendor\yaml-cpp\include;vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;Vendor\entt\include;vendor\mono\include;vendor\FastNoise;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>hzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;_WINDLL;HZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;YAML_CPP_STATIC_DEFINE;HZ_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -93,7 +93,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\Debug\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <ProjectReference>
     </ProjectReference>
@@ -103,7 +103,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>hzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;_WINDLL;HZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;YAML_CPP_STATIC_DEFINE;HZ_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\Debug\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <ProjectReference>
     </ProjectReference>
@@ -131,7 +131,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>hzpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;HZ_BUILD_DLL;GLFW_INCLUDE_NONE;_WINDLL;HZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;HZ_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;YAML_CPP_STATIC_DEFINE;HZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\stb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -149,7 +149,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\Debug\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <ProjectReference>
     </ProjectReference>
@@ -171,10 +171,15 @@
     <ClInclude Include="src\Hazel\Core\Log.h" />
     <ClInclude Include="src\Hazel\Core\Math\AABB.h" />
     <ClInclude Include="src\Hazel\Core\Math\Mat4.h" />
+    <ClInclude Include="src\Hazel\Core\Math\Noise.h" />
     <ClInclude Include="src\Hazel\Core\Math\Ray.h" />
     <ClInclude Include="src\Hazel\Core\MouseButtonCodes.h" />
+    <ClInclude Include="src\Hazel\Core\Ref.h" />
+    <ClInclude Include="src\Hazel\Core\Timer.h" />
     <ClInclude Include="src\Hazel\Core\Timestep.h" />
+    <ClInclude Include="src\Hazel\Core\UUID.h" />
     <ClInclude Include="src\Hazel\Core\Window.h" />
+    <ClInclude Include="src\Hazel\Editor\EditorCamera.h" />
     <ClInclude Include="src\Hazel\Editor\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Hazel\EntryPoint.h" />
     <ClInclude Include="src\Hazel\ImGui\ImGuiLayer.h" />
@@ -196,8 +201,14 @@
     <ClInclude Include="src\Hazel\Renderer\ShaderUniform.h" />
     <ClInclude Include="src\Hazel\Renderer\Texture.h" />
     <ClInclude Include="src\Hazel\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Hazel\Scene\Components.h" />
     <ClInclude Include="src\Hazel\Scene\Entity.h" />
     <ClInclude Include="src\Hazel\Scene\Scene.h" />
+    <ClInclude Include="src\Hazel\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Hazel\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Hazel\Script\ScriptEngine.h" />
+    <ClInclude Include="src\Hazel\Script\ScriptEngineRegistry.h" />
+    <ClInclude Include="src\Hazel\Script\ScriptWrappers.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderPass.h" />
@@ -627,6 +638,67 @@
     <ClInclude Include="vendor\glm\glm\vec3.hpp" />
     <ClInclude Include="vendor\glm\glm\vec4.hpp" />
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\anchor.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\binary.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\contrib\anchordict.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\contrib\graphbuilder.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\depthguard.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\dll.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\emitfromevents.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\emitter.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\emitterdef.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\emittermanip.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\emitterstyle.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\eventhandler.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\exceptions.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\fptostring.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\mark.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\convert.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\impl.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\iterator.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\iterator_fwd.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\memory.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\node.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\node_data.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\node_iterator.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\detail\node_ref.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\emit.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\impl.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\iterator.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\node.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\parse.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\ptr.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\node\type.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\noexcept.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\null.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\ostream_wrapper.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\parser.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\stlemitter.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\traits.h" />
+    <ClInclude Include="vendor\yaml-cpp\include\yaml-cpp\yaml.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\collectionstack.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\contrib\dragonbox.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\contrib\graphbuilderadapter.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\directives.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\emitterstate.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\emitterutils.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\exp.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\indentation.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\nodebuilder.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\nodeevents.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\ptr_vector.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\regex_yaml.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\regeximpl.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\scanner.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\scanscalar.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\scantag.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\setting.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\singledocparser.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\stream.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\streamcharsource.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\stringsource.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\tag.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\token.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp" />
@@ -635,8 +707,11 @@
     <ClCompile Include="src\Hazel\Core\LayerStack.cpp" />
     <ClCompile Include="src\Hazel\Core\Log.cpp" />
     <ClCompile Include="src\Hazel\Core\Math\Mat4.cpp" />
+    <ClCompile Include="src\Hazel\Core\Math\Noise.cpp" />
     <ClCompile Include="src\Hazel\Core\Timestep.cpp" />
+    <ClCompile Include="src\Hazel\Core\UUID.cpp" />
     <ClCompile Include="src\Hazel\Core\Window.cpp" />
+    <ClCompile Include="src\Hazel\Editor\EditorCamera.cpp" />
     <ClCompile Include="src\Hazel\Editor\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Hazel\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Hazel\ImGui\ImGuiLayer.cpp" />
@@ -657,6 +732,11 @@
     <ClCompile Include="src\Hazel\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Hazel\Scene\Entity.cpp" />
     <ClCompile Include="src\Hazel\Scene\Scene.cpp" />
+    <ClCompile Include="src\Hazel\Scene\SceneCamera.cpp" />
+    <ClCompile Include="src\Hazel\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Hazel\Script\ScriptEngine.cpp" />
+    <ClCompile Include="src\Hazel\Script\ScriptEngineRegistry.cpp" />
+    <ClCompile Include="src\Hazel\Script\ScriptWrappers.cpp" />
     <ClCompile Include="src\Hazel\Vendor\stb_image.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
@@ -670,6 +750,102 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\hzpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\binary.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\contrib\graphbuilder.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\convert.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\depthguard.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\directives.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\emit.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\emitfromevents.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\emitter.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\emitterstate.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\emitterutils.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\exceptions.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\exp.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\fptostring.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\memory.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\node.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\node_data.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\nodebuilder.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\nodeevents.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\null.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\ostream_wrapper.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\parse.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\parser.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\regex_yaml.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\scanner.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\scanscalar.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\scantag.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\scantoken.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\simplekey.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\singledocparser.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\stream.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="vendor\yaml-cpp\src\tag.cpp">
+      <AdditionalOptions>/Y- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

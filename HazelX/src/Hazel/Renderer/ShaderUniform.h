@@ -35,7 +35,7 @@ namespace Hazel {
 
 	typedef std::vector<ShaderUniformDeclaration*> ShaderUniformList;
 
-	class ShaderUniformBufferDeclaration
+	class ShaderUniformBufferDeclaration : public RefCounted
 	{
 	public:
 		virtual const std::string& GetName() const = 0;

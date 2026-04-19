@@ -46,6 +46,7 @@ namespace Hazel {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // 标准的alpha混合函数，用于处理透明或半透明对象
 
 		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_STENCIL_TEST);
 
 		auto& caps = RendererAPI::GetCapabilities(); // 硬件能力探针，获取硬件参数
 
@@ -79,7 +80,7 @@ namespace Hazel {
 	void RendererAPI::Clear(float r, float g, float b, float a)
 	{
 		glClearColor(r, g, b, a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void RendererAPI::SetClearColor(float r, float g, float b, float a)

@@ -21,7 +21,7 @@ namespace Hazel {
 		}
 	};
 
-	class Window
+	class Window : public RefCounted
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>; // 事件回调函数

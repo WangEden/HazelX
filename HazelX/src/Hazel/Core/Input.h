@@ -3,14 +3,14 @@
 // 管理输入的类应该是全局的，是 static，一个应用程序只有一个
 // 窗口则不一样，可以有多个
 
-#include "Hazel/Core/Base.h"
+#include "KeyCodes.h"
 
 namespace Hazel {
 
 	class Input
 	{
 	public:
-		static bool IsKeyPressed(int keycode);
+		static bool IsKeyPressed(KeyCode keycode);
 
 		static bool IsMouseButtonPressed(int button);
 		static float GetMouseX();

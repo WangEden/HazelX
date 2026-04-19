@@ -23,7 +23,7 @@ namespace Hazel {
 		Repeat = 2, // 重复，当纹理坐标超出[0, 1]范围时，纹理会重复显示
 	};
 
-	class Texture
+	class Texture : public RefCounted
 	{
 	public:
 		virtual ~Texture() {}
