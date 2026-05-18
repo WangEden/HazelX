@@ -59,8 +59,8 @@ namespace Hazel {
 
 	uint32_t Texture::CalculateMipMapCount(uint32_t width, uint32_t height)
 	{
-		uint32_t levels = 1;
-		while ((width | height) >> levels)
+		uint32_t levels = 1; // level 0表示原图
+		while ((width | height) >> levels) // 不断除以2, 直到最终为1x1是最后一级
 			levels++;
 
 		return levels;

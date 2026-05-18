@@ -4,7 +4,9 @@
 
 namespace Hazel {
 
-	enum class ShaderDataType
+	// 用于指定顶点缓冲区的内存布局描述
+
+	enum class ShaderDataType // 跟GLSL/HLSL中的变量类型对应
 	{
 		None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 	};
@@ -30,13 +32,13 @@ namespace Hazel {
 		return 0;
 	}
 
-	struct BufferElement
+	struct BufferElement // 描述某个顶点属性
 	{
-		std::string Name;
-		ShaderDataType Type;
-		uint32_t Size;
-		uint32_t Offset;
-		bool Normalized;
+		std::string Name;		// 顶点属性名称
+		ShaderDataType Type;	// 数据类型
+		uint32_t Size;			// 字节数
+		uint32_t Offset;		// 在单个顶点数据块中的内存偏移
+		bool Normalized;		// 是否归一化
 
 		BufferElement() = default;
 
