@@ -2,12 +2,11 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Sandbox", 
+            "label": "Build Hazelnut",
             "type": "shell",
             "command": "msbuild",
             "args": [
                 "HazelX.sln",
-                "/t:Sandbox",
                 "/p:Configuration=Debug",
                 "/p:Platform=x64"
             ],

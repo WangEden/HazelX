@@ -1723,6 +1723,7 @@
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClInclude>
     <ClInclude Include="src\Hazel\Physics2D\Physics2D.h" />
+    <ClInclude Include="src\Hazel\ImGui\Colors.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Hazel\Core\Application.cpp">

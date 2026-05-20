@@ -283,6 +283,9 @@ namespace Hazel {
 		// shutdown mono
 		s_SceneContext = nullptr;
 		s_EntityInstanceMap.clear();
+		s_EntityClassMap.clear();
+
+		ShutdownMono();
 	}
 
 	void ScriptEngine::OnSceneDestruct(UUID sceneID)

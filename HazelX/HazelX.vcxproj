@@ -184,6 +184,7 @@
     <ClInclude Include="src\Hazel\EntryPoint.h" />
     <ClInclude Include="src\Hazel\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Hazel\ImGui\ImGuizmo.h" />
+    <ClInclude Include="src\Hazel\ImGui\Colors.h" />
     <ClInclude Include="src\Hazel\Physics2D\Physics2D.h" />
     <ClInclude Include="src\Hazel\Renderer\Buffer.h" />
     <ClInclude Include="src\Hazel\Renderer\Camera.h" />

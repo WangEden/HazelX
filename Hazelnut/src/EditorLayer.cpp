@@ -4,11 +4,11 @@
 #include "Hazel/Renderer/Renderer2D.h"
 #include "Hazel/Script/ScriptEngine.h"
 
-#define ImGuiDockNodeFlags_PassthruDockspace ImGuiDockNodeFlags_PassthruCentralNode
-
 #ifndef STB_TEXT_HAS_SELECTION
 #define STB_TEXT_HAS_SELECTION(s) ((s)->select_start != (s)->select_end)
 #endif
+
+#include <imgui/imgui_internal.h>
 
 namespace Hazel {
 
@@ -36,38 +36,38 @@ namespace Hazel {
 
 	void EditorLayer::OnAttach()
 	{
-		// ImGui Colors
+		// ImGui Colors — 自定义深色主题
 		ImVec4* colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		colors[ImGuiCol_Text] = ImVec4(0.75f, 0.75f, 0.75f, 1.0f);
 		colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
-		colors[ImGuiCol_WindowBg] = ImVec4(0.18f, 0.18f, 0.18f, 1.0f); // Window background
-		colors[ImGuiCol_ChildBg] = ImVec4(1.0f, 1.0f, 1.0f, 0.0f);
+		colors[ImGuiCol_WindowBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+		colors[ImGuiCol_ChildBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
 		colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-		colors[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.5f);
+		colors[ImGuiCol_Border] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
 		colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-		colors[ImGuiCol_FrameBg] = ImVec4(0.3f, 0.3f, 0.3f, 0.5f); // Widget backgrounds
-		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.4f, 0.4f, 0.4f, 0.4f);
-		colors[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, 0.6f);
-		colors[ImGuiCol_TitleBg] = ImVec4(0.04f, 0.04f, 0.04f, 1.0f);
-		colors[ImGuiCol_TitleBgActive] = ImVec4(0.29f, 0.29f, 0.29f, 1.0f);
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 0.51f);
-		colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.0f);
+		colors[ImGuiCol_FrameBg] = ImVec4(0.06f, 0.06f, 0.06f, 1.0f);
+		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.12f, 0.12f, 1.0f);
+		colors[ImGuiCol_FrameBgActive] = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+		colors[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+		colors[ImGuiCol_MenuBarBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
 		colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
 		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.0f);
 		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
-		colors[ImGuiCol_CheckMark] = ImVec4(0.94f, 0.94f, 0.94f, 1.0f);
+		colors[ImGuiCol_CheckMark] = ImVec4(0.75f, 0.75f, 0.75f, 1.0f);
 		colors[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 0.7f);
 		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
-		colors[ImGuiCol_Button] = ImVec4(0.44f, 0.44f, 0.44f, 0.4f);
-		colors[ImGuiCol_ButtonHovered] = ImVec4(0.46f, 0.47f, 0.48f, 1.0f);
-		colors[ImGuiCol_ButtonActive] = ImVec4(0.42f, 0.42f, 0.42f, 1.0f);
-		colors[ImGuiCol_Header] = ImVec4(0.7f, 0.7f, 0.7f, 0.31f);
-		colors[ImGuiCol_HeaderHovered] = ImVec4(0.7f, 0.7f, 0.7f, 0.8f);
-		colors[ImGuiCol_HeaderActive] = ImVec4(0.48f, 0.5f, 0.52f, 1.0f);
-		colors[ImGuiCol_Separator] = ImVec4(0.43f, 0.43f, 0.5f, 0.5f);
-		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.72f, 0.72f, 0.72f, 0.78f);
-		colors[ImGuiCol_SeparatorActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
+		colors[ImGuiCol_Button] = ImVec4(0.22f, 0.22f, 0.22f, 0.78f);
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.22f, 0.22f, 0.22f, 0.59f);
+		colors[ImGuiCol_Header] = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
+		colors[ImGuiCol_HeaderHovered] = ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+		colors[ImGuiCol_HeaderActive] = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
+		colors[ImGuiCol_Separator] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.15f, 0.72f, 0.95f, 0.59f);
+		colors[ImGuiCol_SeparatorActive] = ImVec4(0.15f, 0.72f, 0.95f, 1.0f);
 		colors[ImGuiCol_ResizeGrip] = ImVec4(0.91f, 0.91f, 0.91f, 0.25f);
 		colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.81f, 0.81f, 0.81f, 0.67f);
 		colors[ImGuiCol_ResizeGripActive] = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
@@ -81,6 +81,36 @@ namespace Hazel {
 		colors[ImGuiCol_NavHighlight] = ImVec4(0.60f, 0.6f, 0.6f, 1.0f);
 		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
 
+		// Tabs
+		colors[ImGuiCol_Tab] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+		colors[ImGuiCol_TabHovered] = ImVec4(1.0f, 0.88f, 0.53f, 0.12f);
+		colors[ImGuiCol_TabActive] = ImVec4(1.0f, 0.88f, 0.53f, 0.24f);
+		colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(1.0f, 0.88f, 0.53f, 0.12f);
+
+		// Tables
+		colors[ImGuiCol_TableHeaderBg] = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
+		colors[ImGuiCol_TableBorderLight] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+
+		// Popups
+		colors[ImGuiCol_PopupBg] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+
+		// Style parameters
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowRounding = 0.0f;
+		style.WindowBorderSize = 0.0f;
+		style.FrameRounding = 2.5f;
+		style.FrameBorderSize = 1.0f;
+		style.TabRounding = 2.0f;
+		style.ScrollbarRounding = 2.0f;
+		style.GrabRounding = 2.0f;
+		style.ChildRounding = 0.0f;
+		style.PopupRounding = 2.0f;
+		style.IndentSpacing = 11.0f;
+		style.ItemSpacing = ImVec2(8.0f, 4.0f);
+		style.ItemInnerSpacing = ImVec2(4.0f, 4.0f);
+		style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
+
 		using namespace glm;
 
 		// Editor
@@ -92,8 +122,6 @@ namespace Hazel {
 		m_SceneHierarchyPanel = CreateScope<SceneHierarchyPanel>(m_EditorScene);
 		m_SceneHierarchyPanel->SetSelectionChangedCallback(std::bind(&EditorLayer::SelectEntity, this, std::placeholders::_1));
 		m_SceneHierarchyPanel->SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
-		// SceneSerializer serializer(m_ActiveScene);
-		// serializer.Deserialize("Scene.yaml");
 	}
 
 	void EditorLayer::OnDetach()
@@ -104,7 +132,6 @@ namespace Hazel {
 	{
 		m_SelectionContext.clear();
 
-		// Editor
 		m_SceneState = SceneState::Play;
 
 		m_RuntimeScene = Ref<Scene>::Create();
@@ -119,7 +146,6 @@ namespace Hazel {
 		m_RuntimeScene->OnRuntimeStop();
 		m_SceneState = SceneState::Edit;
 
-		// Unload runtime scene
 		m_RuntimeScene = nullptr;
 
 		m_SelectionContext.clear();
@@ -143,7 +169,6 @@ namespace Hazel {
 					Renderer::BeginRenderPass(SceneRenderer::GetFinalRenderPass(), false);
 					auto viewProj = m_EditorCamera.GetViewProjection();
 					Renderer2D::BeginScene(viewProj, false);
-					// TODO: Renderer::DrawAABB(m_MeshEntity.GetComponent<MeshComponent>(), m_MeshEntity.GetComponent<TransformComponent>());
 					Renderer2D::EndScene();
 					Renderer::EndRenderPass();
 				}
@@ -295,49 +320,178 @@ namespace Hazel {
 
 	void EditorLayer::OnImGuiRender()
 	{
-		static bool p_open = true;
+		// === DockSpace Window ===
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
 
-		static bool opt_fullscreen_persistant = true;
-		static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
-		bool opt_fullscreen = opt_fullscreen_persistant;
+		window_flags |= ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_MenuBar
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoBringToFrontOnFocus
+			| ImGuiWindowFlags_NoNavFocus;
 
-		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-		// because it would be confusing to have two docking targets within each others.
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-		if (opt_fullscreen)
-		{
-			ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->Pos);
-			ImGui::SetNextWindowSize(viewport->Size);
-			ImGui::SetNextWindowViewport(viewport->ID);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		}
-
-		// When using ImGuiDockNodeFlags_PassthruDockspace, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
-		//if (opt_flags & ImGuiDockNodeFlags_PassthruDockspace)
-		//	window_flags |= ImGuiWindowFlags_NoBackground;
-
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", &p_open, window_flags);
-		ImGui::PopStyleVar();
+		ImGui::Begin("DockSpace", nullptr, window_flags);
+		ImGui::PopStyleVar(3);
 
-		if (opt_fullscreen)
-			ImGui::PopStyleVar(2);
+		// === Custom Titlebar ===
+		const float titlebarHeight = 40.0f;
+		ImVec2 titlebarMin = ImGui::GetCursorScreenPos();
+		ImVec2 titlebarMax = ImVec2(
+			titlebarMin.x + ImGui::GetWindowWidth(),
+			titlebarMin.y + titlebarHeight
+		);
 
-		// Dockspace
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		// Draw titlebar background behind menu bar
+		ImGui::GetWindowDrawList()->AddRectFilled(titlebarMin, titlebarMax, IM_COL32(21, 21, 21, 255));
+
+		// Title text on the left
+		ImGui::SetCursorPos(ImVec2(10.0f, 3.0f));
+		ImGui::TextUnformatted("HazelX Editor");
+
+		// Standard menu bar (ImGuiWindowFlags_MenuBar is set on this window)
+		ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+		if (ImGui::BeginMenuBar())
 		{
-			ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), opt_flags);
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New Scene")) {}
+				if (ImGui::MenuItem("Open Scene...", "Ctrl+O"))
+				{
+					auto& app = Application::Get();
+					std::string filepath = app.OpenFile("Hazel Scene (*.hsc)\0*.hsc\0");
+					if (!filepath.empty())
+					{
+						Ref<Scene> newScene = Ref<Scene>::Create();
+						SceneSerializer serializer(newScene);
+						serializer.Deserialize(filepath);
+						m_EditorScene = newScene;
+						m_SceneHierarchyPanel->SetContext(m_EditorScene);
+						ScriptEngine::SetSceneContext(m_EditorScene);
+						m_EditorScene->SetSelectedEntity({});
+						m_SelectionContext.clear();
+					}
+				}
+				if (ImGui::MenuItem("Save Scene...", "Ctrl+S"))
+				{
+					auto& app = Application::Get();
+					std::string filepath = app.SaveFile("Hazel Scene (*.hsc)\0*.hsc\0");
+					SceneSerializer serializer(m_EditorScene);
+					serializer.Serialize(filepath);
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Reload C# Assembly"))
+					ScriptEngine::ReloadAssembly("assets/scripts/ExampleApp.dll");
+				ImGui::Separator();
+				if (ImGui::MenuItem("Exit"))
+					Application::Get().GetWindow().Close();
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
+				if (ImGui::MenuItem("Redo", "Ctrl+Y")) {}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("View"))
+			{
+				if (ImGui::MenuItem("Toggle Grid", "Ctrl+G"))
+					SceneRenderer::GetOptions().ShowGrid = !SceneRenderer::GetOptions().ShowGrid;
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+		ImGui::PopStyleColor();
+
+		// Window buttons - absolute positioned on the right side of the titlebar
+		const float btnW = 46.0f;
+		const float btnH = titlebarHeight - 2.0f;
+		float btnX = ImGui::GetWindowWidth() - btnW * 3;
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.5f, 0.5f, 0.3f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+
+		ImGui::SetCursorPos(ImVec2(btnX, 1.0f));
+		if (ImGui::InvisibleButton("##min", ImVec2(btnW, btnH)))
+			Application::Get().GetWindow().Minimize();
+
+		btnX += btnW;
+		ImGui::SetCursorPos(ImVec2(btnX, 1.0f));
+		if (ImGui::InvisibleButton("##max", ImVec2(btnW, btnH)))
+		{
+			auto& win = Application::Get().GetWindow();
+			if (win.IsMaximized()) win.Restore();
+			else win.Maximize();
 		}
 
-		// Editor Panel ------------------------------------------------------------------------------
-		ImGui::Begin("Model");
+		btnX += btnW;
+		ImGui::SetCursorPos(ImVec2(btnX, 1.0f));
+		ImGui::PopStyleColor(3);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.15f, 0.15f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
+		if (ImGui::InvisibleButton("##close", ImVec2(btnW, btnH)))
+			Application::Get().GetWindow().Close();
+		ImGui::PopStyleColor(3);
 
+		// Drag: track state so dragging continues even if mouse leaves titlebar
+		{
+			static bool s_Dragging = false;
+			static float s_OffsetX = 0, s_OffsetY = 0;
+
+			ImVec2 mouse = ImGui::GetMousePos();
+			bool inTitlebar = mouse.x >= titlebarMin.x && mouse.x < titlebarMax.x
+				&& mouse.y >= titlebarMin.y && mouse.y < titlebarMax.y;
+
+			// Start drag on click in empty titlebar area
+			if (inTitlebar && !ImGui::IsAnyItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				s_Dragging = true;
+				auto pos = Application::Get().GetWindow().GetWindowPos();
+				s_OffsetX = mouse.x - pos.first;
+				s_OffsetY = mouse.y - pos.second;
+			}
+
+			// Double-click toggles maximize
+			if (inTitlebar && !ImGui::IsAnyItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				auto& win = Application::Get().GetWindow();
+				if (win.IsMaximized()) win.Restore();
+				else win.Maximize();
+				s_Dragging = false;
+			}
+
+			// Continue drag regardless of mouse position
+			if (s_Dragging)
+			{
+				auto& win = Application::Get().GetWindow();
+				if (win.IsMaximized())
+				{
+					win.Restore();
+					float ratio = (float)win.GetWidth() / (titlebarMax.x - titlebarMin.x);
+					s_OffsetX *= ratio;
+				}
+				win.SetWindowPos((int)(mouse.x - s_OffsetX), (int)(mouse.y - s_OffsetY));
+
+				if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+					s_Dragging = false;
+			}
+		}
+
+		ImGuiID dockspaceId = ImGui::GetID("MyDockspace");
+		ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f));
+
+		// === 编辑器面板（这些是 Dockable 窗口，会被 DockSpace 管理） ===
+
+		// Environment Panel
 		ImGui::Begin("Environment");
 
 		if (ImGui::Button("Load Environment Map"))
@@ -377,157 +531,138 @@ namespace Hazel {
 
 		ImGui::End();
 
+		// Model / Material Panel
+		ImGui::Begin("Model");
+
 		ImGui::Separator();
 		{
 			ImGui::Text("Mesh");
-			//auto meshComponent = m_MeshEntity.GetComponent<MeshComponent>();
-			//std::string fullpath = meshComponent.Mesh ? meshComponent.Mesh->GetFilePath() : "None";
-			//size_t found = fullpath.find_last_of("/\\");
-			//std::string path = found != std::string::npos ? fullpath.substr(found + 1) : fullpath;
-			//ImGui::Text(path.c_str()); ImGui::SameLine();
-			//if (ImGui::Button("...##Mesh"))
-			//{
-			//	std::string filename = Application::Get().OpenFile("");
-			//	if (filename != "")
-			//	{
-			//		auto newMesh = Ref<Mesh>::Create(filename);
-			//		// m_MeshMaterial.reset(new MaterialInstance(newMesh->GetMaterial()));
-			//		// m_MeshEntity->SetMaterial(m_MeshMaterial);
-			//		meshComponent.Mesh = newMesh;
-			//	}
-			//}
 		}
 		ImGui::Separator();
 
-		// Textures ------------------------------------------------------------------------------
+		// Albedo
+		if (ImGui::CollapsingHeader("Albedo", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			// Albedo
-			if (ImGui::CollapsingHeader("Albedo", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+			ImGui::Image(m_AlbedoInput.TextureMap ? (void*)m_AlbedoInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
+			ImGui::PopStyleVar();
+			if (ImGui::IsItemHovered())
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-				ImGui::Image(m_AlbedoInput.TextureMap ? (void*)m_AlbedoInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-				ImGui::PopStyleVar();
-				if (ImGui::IsItemHovered())
+				if (m_AlbedoInput.TextureMap)
 				{
-					if (m_AlbedoInput.TextureMap)
-					{
-						ImGui::BeginTooltip();
-						ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-						ImGui::TextUnformatted(m_AlbedoInput.TextureMap->GetPath().c_str());
-						ImGui::PopTextWrapPos();
-						ImGui::Image((void*)m_AlbedoInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-						ImGui::EndTooltip();
-					}
-					if (ImGui::IsItemClicked())
-					{
-						std::string filename = Application::Get().OpenFile("");
-						if (filename != "")
-							m_AlbedoInput.TextureMap = Texture2D::Create(filename, m_AlbedoInput.SRGB);
-					}
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+					ImGui::TextUnformatted(m_AlbedoInput.TextureMap->GetPath().c_str());
+					ImGui::PopTextWrapPos();
+					ImGui::Image((void*)m_AlbedoInput.TextureMap->GetRendererID(), ImVec2(384, 384));
+					ImGui::EndTooltip();
 				}
-				ImGui::SameLine();
-				ImGui::BeginGroup();
-				ImGui::Checkbox("Use##AlbedoMap", &m_AlbedoInput.UseTexture);
-				if (ImGui::Checkbox("sRGB##AlbedoMap", &m_AlbedoInput.SRGB))
+				if (ImGui::IsItemClicked())
 				{
-					if (m_AlbedoInput.TextureMap)
-						m_AlbedoInput.TextureMap = Texture2D::Create(m_AlbedoInput.TextureMap->GetPath(), m_AlbedoInput.SRGB);
+					std::string filename = Application::Get().OpenFile("");
+					if (filename != "")
+						m_AlbedoInput.TextureMap = Texture2D::Create(filename, m_AlbedoInput.SRGB);
 				}
-				ImGui::EndGroup();
-				ImGui::SameLine();
-				ImGui::ColorEdit3("Color##Albedo", glm::value_ptr(m_AlbedoInput.Color), ImGuiColorEditFlags_NoInputs);
 			}
+			ImGui::SameLine();
+			ImGui::BeginGroup();
+			ImGui::Checkbox("Use##AlbedoMap", &m_AlbedoInput.UseTexture);
+			if (ImGui::Checkbox("sRGB##AlbedoMap", &m_AlbedoInput.SRGB))
+			{
+				if (m_AlbedoInput.TextureMap)
+					m_AlbedoInput.TextureMap = Texture2D::Create(m_AlbedoInput.TextureMap->GetPath(), m_AlbedoInput.SRGB);
+			}
+			ImGui::EndGroup();
+			ImGui::SameLine();
+			ImGui::ColorEdit3("Color##Albedo", glm::value_ptr(m_AlbedoInput.Color), ImGuiColorEditFlags_NoInputs);
 		}
+
+		// Normals
+		if (ImGui::CollapsingHeader("Normals", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			// Normals
-			if (ImGui::CollapsingHeader("Normals", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+			ImGui::Image(m_NormalInput.TextureMap ? (void*)m_NormalInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
+			ImGui::PopStyleVar();
+			if (ImGui::IsItemHovered())
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-				ImGui::Image(m_NormalInput.TextureMap ? (void*)m_NormalInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-				ImGui::PopStyleVar();
-				if (ImGui::IsItemHovered())
+				if (m_NormalInput.TextureMap)
 				{
-					if (m_NormalInput.TextureMap)
-					{
-						ImGui::BeginTooltip();
-						ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-						ImGui::TextUnformatted(m_NormalInput.TextureMap->GetPath().c_str());
-						ImGui::PopTextWrapPos();
-						ImGui::Image((void*)m_NormalInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-						ImGui::EndTooltip();
-					}
-					if (ImGui::IsItemClicked())
-					{
-						std::string filename = Application::Get().OpenFile("");
-						if (filename != "")
-							m_NormalInput.TextureMap = Texture2D::Create(filename);
-					}
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+					ImGui::TextUnformatted(m_NormalInput.TextureMap->GetPath().c_str());
+					ImGui::PopTextWrapPos();
+					ImGui::Image((void*)m_NormalInput.TextureMap->GetRendererID(), ImVec2(384, 384));
+					ImGui::EndTooltip();
 				}
-				ImGui::SameLine();
-				ImGui::Checkbox("Use##NormalMap", &m_NormalInput.UseTexture);
+				if (ImGui::IsItemClicked())
+				{
+					std::string filename = Application::Get().OpenFile("");
+					if (filename != "")
+						m_NormalInput.TextureMap = Texture2D::Create(filename);
+				}
 			}
+			ImGui::SameLine();
+			ImGui::Checkbox("Use##NormalMap", &m_NormalInput.UseTexture);
 		}
+
+		// Metalness
+		if (ImGui::CollapsingHeader("Metalness", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			// Metalness
-			if (ImGui::CollapsingHeader("Metalness", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+			ImGui::Image(m_MetalnessInput.TextureMap ? (void*)m_MetalnessInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
+			ImGui::PopStyleVar();
+			if (ImGui::IsItemHovered())
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-				ImGui::Image(m_MetalnessInput.TextureMap ? (void*)m_MetalnessInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-				ImGui::PopStyleVar();
-				if (ImGui::IsItemHovered())
+				if (m_MetalnessInput.TextureMap)
 				{
-					if (m_MetalnessInput.TextureMap)
-					{
-						ImGui::BeginTooltip();
-						ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-						ImGui::TextUnformatted(m_MetalnessInput.TextureMap->GetPath().c_str());
-						ImGui::PopTextWrapPos();
-						ImGui::Image((void*)m_MetalnessInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-						ImGui::EndTooltip();
-					}
-					if (ImGui::IsItemClicked())
-					{
-						std::string filename = Application::Get().OpenFile("");
-						if (filename != "")
-							m_MetalnessInput.TextureMap = Texture2D::Create(filename);
-					}
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+					ImGui::TextUnformatted(m_MetalnessInput.TextureMap->GetPath().c_str());
+					ImGui::PopTextWrapPos();
+					ImGui::Image((void*)m_MetalnessInput.TextureMap->GetRendererID(), ImVec2(384, 384));
+					ImGui::EndTooltip();
 				}
-				ImGui::SameLine();
-				ImGui::Checkbox("Use##MetalnessMap", &m_MetalnessInput.UseTexture);
-				ImGui::SameLine();
-				ImGui::SliderFloat("Value##MetalnessInput", &m_MetalnessInput.Value, 0.0f, 1.0f);
+				if (ImGui::IsItemClicked())
+				{
+					std::string filename = Application::Get().OpenFile("");
+					if (filename != "")
+						m_MetalnessInput.TextureMap = Texture2D::Create(filename);
+				}
 			}
+			ImGui::SameLine();
+			ImGui::Checkbox("Use##MetalnessMap", &m_MetalnessInput.UseTexture);
+			ImGui::SameLine();
+			ImGui::SliderFloat("Value##MetalnessInput", &m_MetalnessInput.Value, 0.0f, 1.0f);
 		}
+
+		// Roughness
+		if (ImGui::CollapsingHeader("Roughness", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			// Roughness
-			if (ImGui::CollapsingHeader("Roughness", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+			ImGui::Image(m_RoughnessInput.TextureMap ? (void*)m_RoughnessInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
+			ImGui::PopStyleVar();
+			if (ImGui::IsItemHovered())
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-				ImGui::Image(m_RoughnessInput.TextureMap ? (void*)m_RoughnessInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-				ImGui::PopStyleVar();
-				if (ImGui::IsItemHovered())
+				if (m_RoughnessInput.TextureMap)
 				{
-					if (m_RoughnessInput.TextureMap)
-					{
-						ImGui::BeginTooltip();
-						ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-						ImGui::TextUnformatted(m_RoughnessInput.TextureMap->GetPath().c_str());
-						ImGui::PopTextWrapPos();
-						ImGui::Image((void*)m_RoughnessInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-						ImGui::EndTooltip();
-					}
-					if (ImGui::IsItemClicked())
-					{
-						std::string filename = Application::Get().OpenFile("");
-						if (filename != "")
-							m_RoughnessInput.TextureMap = Texture2D::Create(filename);
-					}
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+					ImGui::TextUnformatted(m_RoughnessInput.TextureMap->GetPath().c_str());
+					ImGui::PopTextWrapPos();
+					ImGui::Image((void*)m_RoughnessInput.TextureMap->GetRendererID(), ImVec2(384, 384));
+					ImGui::EndTooltip();
 				}
-				ImGui::SameLine();
-				ImGui::Checkbox("Use##RoughnessMap", &m_RoughnessInput.UseTexture);
-				ImGui::SameLine();
-				ImGui::SliderFloat("Value##RoughnessInput", &m_RoughnessInput.Value, 0.0f, 1.0f);
+				if (ImGui::IsItemClicked())
+				{
+					std::string filename = Application::Get().OpenFile("");
+					if (filename != "")
+						m_RoughnessInput.TextureMap = Texture2D::Create(filename);
+				}
 			}
+			ImGui::SameLine();
+			ImGui::Checkbox("Use##RoughnessMap", &m_RoughnessInput.UseTexture);
+			ImGui::SameLine();
+			ImGui::SliderFloat("Value##RoughnessInput", &m_RoughnessInput.Value, 0.0f, 1.0f);
 		}
 
 		ImGui::Separator();
@@ -550,8 +685,7 @@ namespace Hazel {
 
 		ImGui::End();
 
-		// ImGui::ShowDemoWindow();
-
+		// Toolbar
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12, 4));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
@@ -561,7 +695,6 @@ namespace Hazel {
 		ImGui::Begin("Toolbar");
 		if (m_SceneState == SceneState::Edit)
 		{
-			// 第一个参数是字符串 ID，第二个参数才是纹理 ID
 			if (ImGui::ImageButton("PlayButton", (ImTextureID)m_PlayButtonTex->GetRendererID(), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.9f, 0.9f, 0.9f, 1.0f)))
 			{
 				OnScenePlay();
@@ -579,44 +712,18 @@ namespace Hazel {
 		{
 			HZ_CORE_INFO("PLAY!");
 		}
-
-		//if (m_SceneState == SceneState::Edit)
-		//{
-		//	//bool ImGui::ImageButton(const char* str_id, ImTextureRef tex_ref, const ImVec2& image_size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col)
-
-		//	if (ImGui::ImageButton((ImTextureID)(m_PlayButtonTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(0.9f, 0.9f, 0.9f, 1.0f)))
-		//	{
-		//		OnScenePlay();
-		//	}
-		//}
-		//else if (m_SceneState == SceneState::Play)
-		//{
-		//	if (ImGui::ImageButton((ImTextureID)(m_PlayButtonTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(1.0f, 1.0f, 1.0f, 0.2f)))
-		//	{
-		//		OnSceneStop();
-		//	}
-		//}
-		//ImGui::SameLine();
-		//if (ImGui::ImageButton((ImTextureID)(m_PlayButtonTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.6f)))
-		//{
-		//	HZ_CORE_INFO("PLAY!");
-		//}
-
 		ImGui::End();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar(3);
 
+		// Viewport
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Viewport");
 
 		m_ViewportPanelMouseOver = ImGui::IsWindowHovered();
 		m_ViewportPanelFocused = ImGui::IsWindowFocused();
 
-		auto viewportOffset = ImGui::GetCursorPos(); // includes tab bar
+		auto viewportOffset = ImGui::GetCursorPos();
 		auto viewportSize = ImGui::GetContentRegionAvail();
 		SceneRenderer::SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 		m_EditorScene->SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
@@ -626,7 +733,6 @@ namespace Hazel {
 		m_EditorCamera.SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 		ImGui::Image((void*)SceneRenderer::GetFinalColorBufferRendererID(), viewportSize, { 0, 1 }, { 1, 0 });
 
-		static int counter = 0;
 		auto windowSize = ImGui::GetWindowSize();
 		ImVec2 minBound = ImGui::GetWindowPos();
 		minBound.x += viewportOffset.x;
@@ -680,54 +786,11 @@ namespace Hazel {
 		ImGui::End();
 		ImGui::PopStyleVar();
 
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("New Scene"))
-				{
-
-				}
-				if (ImGui::MenuItem("Open Scene..."))
-				{
-					auto& app = Application::Get();
-					std::string filepath = app.OpenFile("Hazel Scene (*.hsc)\0*.hsc\0");
-					if (!filepath.empty())
-					{
-						Ref<Scene> newScene = Ref<Scene>::Create();
-						SceneSerializer serializer(newScene);
-						serializer.Deserialize(filepath);
-						m_EditorScene = newScene;
-						m_SceneHierarchyPanel->SetContext(m_EditorScene);
-						ScriptEngine::SetSceneContext(m_EditorScene);
-
-						m_EditorScene->SetSelectedEntity({});
-						m_SelectionContext.clear();
-					}
-				}
-				if (ImGui::MenuItem("Save Scene..."))
-				{
-					auto& app = Application::Get();
-					std::string filepath = app.SaveFile("Hazel Scene (*.hsc)\0*.hsc\0");
-					SceneSerializer serializer(m_EditorScene);
-					serializer.Serialize(filepath);
-				}
-				ImGui::Separator();
-				if (ImGui::MenuItem("Reload C# Assembly"))
-					ScriptEngine::ReloadAssembly("assets/scripts/ExampleApp.dll");
-				ImGui::Separator();
-				if (ImGui::MenuItem("Exit"))
-					p_open = false;
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
-
+		// Scene Hierarchy & Script Debug
 		m_SceneHierarchyPanel->OnImGuiRender();
-
 		ScriptEngine::OnImGuiRender();
 
-		ImGui::End();
+		ImGui::End(); // DockSpace window
 	}
 
 	void EditorLayer::OnEvent(Event& e)
@@ -784,11 +847,9 @@ namespace Hazel {
 			switch (e.GetKeyCode())
 			{
 				case KeyCode::G:
-					// Toggle grid
 					SceneRenderer::GetOptions().ShowGrid = !SceneRenderer::GetOptions().ShowGrid;
 					break;
 				case KeyCode::B:
-					// Toggle bounding boxes
 					m_UIShowBoundingBoxes = !m_UIShowBoundingBoxes;
 					ShowBoundingBoxes(m_UIShowBoundingBoxes, m_UIShowBoundingBoxesOnTop);
 					break;

@@ -40,6 +40,13 @@ namespace Hazel {
 		virtual bool IsVSync() const = 0;
 
 		virtual void* GetNativeWindow() const = 0;
+		virtual void DragWindow() = 0;
+		virtual void Minimize() = 0;
+		virtual void Maximize() = 0;
+		virtual void Restore() = 0;
+		virtual bool IsMaximized() const = 0;
+		virtual void Close() = 0;
+		virtual void SetWindowPos(int x, int y) = 0;
 
 		// 需要具体平台具体实现这个Create函数
 		static Window* Create(const WindowProps& props = WindowProps());

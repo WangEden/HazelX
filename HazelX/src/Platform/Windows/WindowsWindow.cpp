@@ -8,6 +8,10 @@
 
 #include <imgui.h>
 
+#include <Windows.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
 namespace Hazel {
 
 	static bool s_GLFWInitialized = false; // 为了能创建多个窗口
@@ -49,9 +53,10 @@ namespace Hazel {
 			s_GLFWInitialized = true;
 		}
 
+		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
-		glfwMaximizeWindow(m_Window);
+		//glfwMaximizeWindow(m_Window);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		HZ_CORE_ASSERT(status, "Failed to initialize Glad!");
 		glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -201,4 +206,41 @@ namespace Hazel {
 		return m_Data.VSync;
 	}
 
+	void WindowsWindow::DragWindow()
+	{
+		HWND hwnd = glfwGetWin32Window(m_Window);
+		ReleaseCapture();
+		SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+	}
+
+	void WindowsWindow::Minimize()
+	{
+		glfwIconifyWindow(m_Window);
+	}
+
+	void WindowsWindow::Maximize()
+	{
+		glfwMaximizeWindow(m_Window);
+	}
+
+	void WindowsWindow::Restore()
+	{
+		glfwRestoreWindow(m_Window);
+	}
+
+	bool WindowsWindow::IsMaximized() const
+	{
+		return glfwGetWindowAttrib(m_Window, GLFW_MAXIMIZED);
+	}
+
+	void WindowsWindow::Close()
+	{
+		WindowCloseEvent e;
+		m_Data.EventCallback(e);
+	}
+
+	void WindowsWindow::SetWindowPos(int x, int y)
+	{
+		glfwSetWindowPos(m_Window, x, y);
+	}
 }

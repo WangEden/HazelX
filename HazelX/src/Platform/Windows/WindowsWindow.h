@@ -28,6 +28,13 @@ namespace Hazel {
 		bool IsVSync() const override;
 
 		inline virtual void* GetNativeWindow() const { return m_Window; }
+		virtual void DragWindow() override;
+		virtual void Minimize() override;
+		virtual void Maximize() override;
+		virtual void Restore() override;
+		virtual bool IsMaximized() const override;
+		virtual void Close() override;
+		virtual void SetWindowPos(int x, int y) override;
 	private:
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();

@@ -2,16 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(Windows) Launch Sandbox",
-            "type": "cppvsdbg", // 使用 VS 的调试引擎
+            "name": "(Windows) Launch Hazelnut",
+            "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/bin/Debug-windows-x86_64/Sandbox/Sandbox.exe",
+            "program": "${workspaceRoot}/bin/Debug-windows-x86_64/Hazelnut/Hazelnut.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceRoot}/bin/Debug-windows-x86_64/Sandbox",
+            "cwd": "${workspaceRoot}/bin/Debug-windows-x86_64/Hazelnut",
             "environment": [],
             "console": "integratedTerminal",
-            "preLaunchTask": "Build Sandbox" // 关键：运行前先执行上面的编译任务
+            "preLaunchTask": "Build Hazelnut"
         }
     ]
 }

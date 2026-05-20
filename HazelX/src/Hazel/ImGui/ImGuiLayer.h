@@ -23,6 +23,9 @@ namespace Hazel {
 		virtual void OnAttach() override;
 		virtual void OnDetach() override; 
 		virtual void OnImGuiRender() override;
+
+		static void SetDarkThemeColors();
+		static void SetDarkThemeV2Colors();
 	private:
 		float m_Time = 0.0f;
 	};

@@ -42,6 +42,14 @@ namespace Hazel {
 
 	Application::~Application()
 	{
+		ScriptEngine::Shutdown();
+
+		for (Layer* layer : m_LayerStack) {
+			layer->OnDetach();
+			delete layer;
+		}
+
+		//Renderer::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
