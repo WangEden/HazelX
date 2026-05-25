@@ -1,8 +1,8 @@
 -- premake5.lua
 
-workspace "HazelX"
+workspace "Ripple"
     architecture "x64"
-    startproject "Hazelnut"
+    startproject "Editor"
 
     configurations
     {
@@ -17,26 +17,26 @@ workspace "HazelX"
     outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
     IncludeDir = {}
-    IncludeDir["GLFW"] = "HazelX/vendor/GLFW/include"
-    IncludeDir["Glad"] = "HazelX/vendor/Glad/include"
-    IncludeDir["ImGui"] = "HazelX/vendor/imgui"
-    IncludeDir["GLM"] = "HazelX/vendor/glm"
-    IncludeDir["entt"] = "HazelX/Vendor/entt/include"
-    IncludeDir["FastNoise"] = "HazelX/vendor/FastNoise"
-    IncludeDir["mono"] = "HazelX/vendor/mono/include"
+    IncludeDir["GLFW"] = "Engine/vendor/GLFW/include"
+    IncludeDir["Glad"] = "Engine/vendor/Glad/include"
+    IncludeDir["ImGui"] = "Engine/vendor/imgui"
+    IncludeDir["GLM"] = "Engine/vendor/glm"
+    IncludeDir["entt"] = "Engine/Vendor/entt/include"
+    IncludeDir["FastNoise"] = "Engine/vendor/FastNoise"
+    IncludeDir["mono"] = "Engine/vendor/mono/include"
 
     LibraryDir = {}
     LibraryDir["mono"] = "vendor/mono/lib/Debug/mono-2.0-sgen.lib"
 
 group "Denpendencies"
-    include "HazelX/vendor/GLFW" -- 链接到GLFW子模块中的premake5.lua
-    include "HazelX/vendor/Glad"
-    include "HazelX/vendor/imgui"
+    include "Engine/vendor/GLFW" -- 链接到GLFW子模块中的premake5.lua
+    include "Engine/vendor/Glad"
+    include "Engine/vendor/imgui"
 group ""
 
 group "Core"
-project "HazelX"
-    location "HazelX"
+project "Engine"
+    location "Engine"
     kind "StaticLib"
     language "C++"
     cppdialect "C++17"
@@ -47,8 +47,7 @@ project "HazelX"
 
     filter "system:windows"
         pchheader "hzpch.h"
-        pchsource "HazelX/src/hzpch.cpp"
-
+        pchsource "Engine/src/hzpch.cpp"
 
     files
     {
@@ -97,7 +96,7 @@ project "HazelX"
         "ImGui",
     }
 
-    filter "files:HazelX/vendor/yaml-cpp/src/**.cpp"
+    filter "files:Engine/vendor/yaml-cpp/src/**.cpp"
         buildoptions { "/Y-" }
 
     filter "system:windows"
@@ -110,8 +109,8 @@ project "HazelX"
 
         defines
         {
-            "HZ_PLATFORM_WINDOWS",
-            -- "HZ_BUILD_DLL",
+            "RP_PLATFORM_WINDOWS",
+            -- "RP_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
             "YAML_CPP_STATIC_DEFINE",
         }
@@ -128,27 +127,27 @@ project "HazelX"
         }
         defines
         {
-            "HZ_PLATFORM_MACOS",
+            "RP_PLATFORM_MACOS",
             "GLFW_INCLUDE_NONE"
         }
 
     filter "configurations:Debug"
-        defines "HZ_DEBUG"
+        defines "RP_DEBUG"
         runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
-        defines "HZ_RELEASE"
+        defines "RP_RELEASE"
         runtime "Release"
         optimize "on"
 
     filter "configurations:Dist"
-        defines "HZ_DIST"
+        defines "RP_DIST"
         runtime "Release"
         optimize "on"
     
-project "Hazel-ScriptCore"
-	location "Hazel-ScriptCore"
+project "ScriptCore"
+	location "ScriptCore"
 	kind "SharedLib"
 	language "C#"
 
@@ -162,8 +161,8 @@ project "Hazel-ScriptCore"
 group ""
 
 group "Tools"
-project "Hazelnut"
-    location "Hazelnut"
+project "Editor"
+    location "Editor"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -180,22 +179,22 @@ project "Hazelnut"
 
     externalincludedirs
     {
-        "HazelX/vendor/spdlog/include",
+        "Engine/vendor/spdlog/include",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.entt}",
-        "HazelX/vendor"
+        "Engine/vendor"
     }
 
     includedirs
     {
         "%{prj.name}/src",
-        "HazelX/src"
+        "Engine/src"
     }
 
     links
     {
-        "HazelX"
+        "Engine"
     }
 
     filter { "system:windows", "configurations:Debug" }
@@ -205,22 +204,22 @@ project "Hazelnut"
 
         defines
         {
-            "HZ_DEBUG",
-            "HZ_PLATFORM_WINDOWS"
+            "RP_DEBUG",
+            "RP_PLATFORM_WINDOWS"
         }
 
         postbuildcommands 
         {
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
 
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Debug/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Debug/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/mono/bin/Debug/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/mono/bin/Debug/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
         }
 
         links
         {
-			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+			"Engine/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
         }
 
     filter { "system:windows", "configurations:Release" }
@@ -230,22 +229,22 @@ project "Hazelnut"
 
         defines 
         {
-            "HZ_RELEASE",
-            "HZ_PLATFORM_WINDOWS"
+            "RP_RELEASE",
+            "RP_PLATFORM_WINDOWS"
         }
 
         postbuildcommands 
         {
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
 
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/mono/bin/Release/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/mono/bin/Release/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
         }
         
         links
 		{
-			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+			"Engine/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
 		}
 
     filter { "system:windows", "configurations:Dist" }
@@ -255,26 +254,26 @@ project "Hazelnut"
 
         defines 
         {
-            "HZ_DIST",
-            "HZ_PLATFORM_WINDOWS"
+            "RP_DIST",
+            "RP_PLATFORM_WINDOWS"
         }
 
         postbuildcommands 
         {
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/assimp/lib/x64/assimp-vc143-mt.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/assimp/lib/x64/assimp-vc143-mt.pdb\" \"%{cfg.targetdir}\""),
 
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
-            ("{COPY} \"$(SolutionDir)HazelX/vendor/mono/bin/Release/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/mono/bin/Release/mono-2.0-sgen.dll\" \"%{cfg.targetdir}\""),
+            ("{COPY} \"$(SolutionDir)Engine/vendor/mono/bin/Release/mono-2.0-sgen.pdb\" \"%{cfg.targetdir}\""),
         }
 
         links
 		{
-			"HazelX/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
+			"Engine/vendor/assimp/lib/x64/assimp-vc143-mt.lib"
 		}
 
     filter "system:macosx"
-        defines { "HZ_PLATFORM_MACOS" }
+        defines { "RP_PLATFORM_MACOS" }
 group ""
 
 workspace "Sandbox"
@@ -288,8 +287,8 @@ workspace "Sandbox"
         "Dist"
     }
 
-project "Hazel-ScriptCore"
-	location "Hazel-ScriptCore"
+project "ScriptCore"
+	location "ScriptCore"
 	kind "SharedLib"
 	language "C#"
 
@@ -306,7 +305,7 @@ project "ExampleApp"
 	kind "SharedLib"
 	language "C#"
 
-	targetdir ("Hazelnut/assets/scripts")
+	targetdir ("Editor/assets/scripts")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files 
@@ -316,5 +315,5 @@ project "ExampleApp"
 
 	links
 	{
-		"Hazel-ScriptCore"
+		"ScriptCore"
 	}

@@ -18,7 +18,7 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\Hazelnut\assets\scripts\</OutputPath>
+    <OutputPath>..\Editor\assets\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\bin-int\Debug-windows-x86_64\ExampleApp\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
@@ -30,7 +30,7 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\Hazelnut\assets\scripts\</OutputPath>
+    <OutputPath>..\Editor\assets\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\bin-int\Release-windows-x86_64\ExampleApp\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
@@ -42,7 +42,7 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\Hazelnut\assets\scripts\</OutputPath>
+    <OutputPath>..\Editor\assets\scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\bin-int\Dist-windows-x86_64\ExampleApp\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
@@ -63,9 +63,9 @@
     <Compile Include="src\Sink.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hazel-ScriptCore\Hazel-ScriptCore.csproj">
-      <Project>{6432FCE0-502B-1B33-795D-00B865B5FA3E}</Project>
-      <Name>Hazel-ScriptCore</Name>
+    <ProjectReference Include="..\ScriptCore\ScriptCore.csproj">
+      <Project>{43DDC966-2F95-0BB4-989C-E40F8473A6A4}</Project>
+      <Name>ScriptCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

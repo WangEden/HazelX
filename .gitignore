@@ -2,19 +2,21 @@
 .vs/
 bin/
 bin-int/
+docs/
 
-HazelX/vendor/*/*/
-!HazelX/vendor/*/include/
-!HazelX/vendor/*/lib/
-!HazelX/vendor/*/src/
-!HazelX/vendor/*/premake5.lua
-!HazelX/vendor/*/*.h
-!HazelX/vendor/*/*.cpp
-!HazelX/vendor/*/*.txt
-!HazelX/vendor/glm/glm/
-!HazelX/vendor/imgui/backends/
-!HazelX/vendor/*/include/
-!HazelX/vendor/*/src/
+
+Engine/vendor/*/*/
+!Engine/vendor/*/include/
+!Engine/vendor/*/lib/
+!Engine/vendor/*/src/
+!Engine/vendor/*/premake5.lua
+!Engine/vendor/*/*.h
+!Engine/vendor/*/*.cpp
+!Engine/vendor/*/*.txt
+!Engine/vendor/glm/glm/
+!Engine/vendor/imgui/backends/
+!Engine/vendor/*/include/
+!Engine/vendor/*/src/
 
 # vendor
 # vendor/bin/premake/premake5.exe
@@ -23,6 +25,9 @@ HazelX/vendor/*/*/
 *.user
 *.sln
 *.vcxproj*
+
+.claude/
+.vscode/
 
 # Sandbox
 **/imgui.ini

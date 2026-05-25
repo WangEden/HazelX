@@ -1,4 +1,4 @@
-using Hazel;
+using Ripple;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Example
 					 float sampleX = x / scale;
 					 float sampleY = y / scale;
 
-					 float perlinValue = Hazel.Noise.PerlinNoise(sampleX, sampleY);
+					 float perlinValue = Ripple.Noise.PerlinNoise(sampleX, sampleY);
 					 noiseMap[x, y] = perlinValue;
 				 }
 			 }
@@ -76,7 +76,7 @@ namespace Example
                         float sampleX = (x - halfWidth) / scale * frequency + octaveOffsets[i].X;
                         float sampleY = (y - halfHeight) / scale * frequency + octaveOffsets[i].Y;
 
-                        float perlinValue = Hazel.Noise.PerlinNoise(sampleX, sampleY);// * 2 - 1; // 0->1  // -1 -> 1      
+                        float perlinValue = Ripple.Noise.PerlinNoise(sampleX, sampleY);// * 2 - 1; // 0->1  // -1 -> 1      
                         noiseHeight += perlinValue * amplitude;
 
                         amplitude *= persistance;
