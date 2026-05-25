@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../Playground/Hazel-dev"
+		},
+		{
+			"path": "../../Playground/HazelSourceOnlyRead"
+		}
+	],
+	"settings": {}
+}

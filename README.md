@@ -1,4 +1,4 @@
-# HazelX
+# RippleEngine
 
 基于SPH的流体模拟
 
